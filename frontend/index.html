@@ -1,18 +1,19 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PlaceIQ — Know Before You Go</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    :root {
-      --bg:#08090d; --surface:#0f1117; --card:#141720; --border:#1e2130;
-      --accent:#00e5ff; --accent2:#7b61ff; --danger:#ff4d6d;
-      --warn:#ffb830; --success:#00e096; --text:#e8eaf0; --muted:#5a6070;
-      --font-head:'Syne',sans-serif; --font-body:'DM Sans',sans-serif;
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#08090d;--surface:#0f1117;--card:#141720;--border:#1e2130;
+      --accent:#00e5ff;--accent2:#7b61ff;--danger:#ff4d6d;
+      --warn:#ffb830;--success:#00e096;--text:#e8eaf0;--muted:#5a6070;
+      --font-head:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
     }
     html{scroll-behavior:smooth}
     body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.6;min-height:100vh;overflow-x:hidden}
@@ -31,7 +32,7 @@
     .btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,229,255,0.25)}
     .btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
     .btn-secondary{background:var(--card);color:var(--text);border:1px solid var(--border)}
-    .btn-secondary:hover{border-color:var(--accent2);box-shadow:0 8px 24px rgba(123,97,255,0.15)}
+    .btn-secondary:hover{border-color:var(--accent2)}
     .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 18px;border-radius:8px;cursor:pointer;font-family:var(--font-body);font-size:0.85rem;transition:.2s}
     .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
 
@@ -43,7 +44,6 @@
     label{display:block;margin-bottom:6px;color:var(--muted);font-size:0.82rem;font-weight:500;letter-spacing:0.5px;text-transform:uppercase}
     .form-group{margin-bottom:20px}
     .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px}
-
     .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.2);color:var(--accent);padding:6px 14px;border-radius:20px;font-size:0.78rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:28px}
     .badge::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 2s infinite}
     @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}
@@ -102,57 +102,65 @@
     .progress-dot.done{background:var(--accent)}
     .progress-dot.active{background:var(--accent2)}
     .q-label{font-family:var(--font-head);font-size:0.78rem;font-weight:700;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px}
-    .question-box{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:14px;padding:24px;margin-bottom:24px;font-size:1.05rem;line-height:1.7;min-height:80px;transition:.3s}
+    .question-box{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:14px;padding:24px;margin-bottom:24px;font-size:1.05rem;line-height:1.7;min-height:80px}
     .question-box.loading{display:flex;align-items:center;gap:12px;color:var(--muted)}
     .spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
     @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* TEXT MODE */
     .answer-label{font-family:var(--font-head);font-size:0.78rem;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
     #answer-input{height:160px;margin-bottom:18px}
     .interview-actions{display:flex;gap:12px;flex-wrap:wrap}
 
-    /* VOICE UI */
-    .voice-interview-ui{display:none;flex-direction:column;align-items:center;gap:24px;padding:10px 0 24px}
+    /* VOICE MODE */
+    .voice-interview-ui{display:none;flex-direction:column;align-items:center;gap:20px;width:100%}
     .voice-interview-ui.active{display:flex}
-    .ai-avatar-wrap{position:relative;display:flex;align-items:center;justify-content:center}
-    .ai-avatar{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#0f1117,#141720);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative;z-index:2;transition:.3s}
-    .ai-avatar.speaking{border-color:var(--accent);box-shadow:0 0 0 4px rgba(0,229,255,0.15)}
-    .ai-avatar.listening{border-color:var(--danger);box-shadow:0 0 0 4px rgba(255,77,109,0.15)}
-    .ring{position:absolute;border-radius:50%;border:1px solid var(--accent);opacity:0;animation:ringOut 2s ease-out infinite}
-    .ring1{width:150px;height:150px;animation-delay:0s}
-    .ring2{width:185px;height:185px;animation-delay:0.5s}
-    .ring3{width:220px;height:220px;animation-delay:1s}
-    .ring.hidden{display:none}
-    .ring.red{border-color:var(--danger)}
-    @keyframes ringOut{0%{opacity:.5;transform:scale(.85)}100%{opacity:0;transform:scale(1)}}
-    .voice-status{font-family:var(--font-head);font-size:0.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);min-height:22px;text-align:center}
-    .voice-status.speaking{color:var(--accent)}
-    .voice-status.listening{color:var(--danger)}
-    .voice-status.thinking{color:var(--accent2)}
-    .transcript-box{width:100%;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;min-height:90px;font-size:0.95rem;line-height:1.6;color:var(--text)}
+
+    /* Live waveform */
+    .waveform-wrap{width:100%;height:64px;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;gap:3px;padding:0 16px}
+    .waveform-bar{width:4px;border-radius:2px;background:var(--accent2);transition:height .1s ease;min-height:4px}
+    .waveform-idle .waveform-bar{height:8px;background:var(--border)}
+    .waveform-active .waveform-bar{background:var(--accent)}
+
+    /* Mic button area */
+    .mic-area{display:flex;flex-direction:column;align-items:center;gap:12px}
+    .mic-btn{width:80px;height:80px;border-radius:50%;background:var(--danger);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.8rem;transition:.2s;box-shadow:0 4px 24px rgba(255,77,109,0.35);flex-shrink:0}
+    .mic-btn:hover{transform:scale(1.06)}
+    .mic-btn.recording{background:var(--surface);border:3px solid var(--danger);animation:micPulse 1.2s ease infinite}
+    .mic-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+    @keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,77,109,.5)}60%{box-shadow:0 0 0 16px rgba(255,77,109,0)}}
+    .mic-status{font-family:var(--font-head);font-size:0.8rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);text-align:center}
+    .mic-status.listening{color:var(--danger)}
+    .mic-status.done{color:var(--success)}
+
+    /* Confidence live bar */
+    .confidence-live-wrap{width:100%}
+    .confidence-live-label{display:flex;justify-content:space-between;margin-bottom:8px;font-size:0.82rem}
+    .confidence-live-label span:first-child{color:var(--muted);font-family:var(--font-head);font-size:0.75rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase}
+    .confidence-live-label span:last-child{color:var(--accent);font-family:var(--font-head);font-weight:800}
+    .confidence-live-track{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+    .confidence-live-fill{height:100%;border-radius:4px;transition:width .3s ease,background .3s ease;background:var(--accent2);width:0%}
+
+    /* Transcript */
+    .transcript-box{width:100%;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;min-height:90px;font-size:0.95rem;line-height:1.6}
     .transcript-label{font-family:var(--font-head);font-size:0.7rem;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
     .transcript-placeholder{color:var(--muted);font-style:italic;font-size:0.9rem}
-    .mic-btn{width:72px;height:72px;border-radius:50%;background:var(--danger);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.6rem;transition:.2s;box-shadow:0 4px 20px rgba(255,77,109,0.3)}
-    .mic-btn:hover{transform:scale(1.08)}
-    .mic-btn.recording{background:var(--surface);border:2px solid var(--danger);animation:micPulse 1s ease infinite}
-    .mic-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
-    @keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,77,109,.4)}50%{box-shadow:0 0 0 12px rgba(255,77,109,0)}}
-    .voice-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center}
-    .voice-hint{color:var(--muted);font-size:0.8rem;text-align:center}
+    .voice-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;width:100%}
 
     /* EVAL OVERLAY */
     .eval-overlay{position:fixed;inset:0;background:rgba(8,9,13,0.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:.3s}
     .eval-overlay.show{opacity:1;pointer-events:all}
-    .eval-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;max-width:420px;width:90%;transform:translateY(20px);transition:.3s}
+    .eval-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;max-width:440px;width:90%;transform:translateY(20px);transition:.3s}
     .eval-overlay.show .eval-card{transform:translateY(0)}
-    .eval-score-row{display:flex;gap:10px;margin:18px 0}
+    .eval-score-row{display:flex;gap:8px;margin:18px 0}
     .eval-score-chip{flex:1;background:var(--surface);border-radius:10px;padding:12px 8px;text-align:center}
-    .eval-score-chip .val{font-family:var(--font-head);font-size:1.5rem;font-weight:800;color:var(--accent)}
-    .eval-score-chip .lbl{font-size:0.7rem;color:var(--muted);margin-top:2px}
+    .eval-score-chip .val{font-family:var(--font-head);font-size:1.4rem;font-weight:800;color:var(--accent)}
+    .eval-score-chip .lbl{font-size:0.68rem;color:var(--muted);margin-top:2px}
     .eval-feedback{color:var(--muted);font-size:0.88rem;line-height:1.6;border-left:2px solid var(--accent2);padding-left:12px;margin-bottom:18px}
 
     /* RESULTS */
     #screen-results{padding:0}
-    .results-wrap{max-width:720px;margin:0 auto;padding:40px 20px;width:100%}
+    .results-wrap{max-width:760px;margin:0 auto;padding:40px 20px;width:100%}
     .results-hero{text-align:center;margin-bottom:40px}
     .results-hero h2{font-family:var(--font-head);font-size:1.6rem;font-weight:800;margin-bottom:20px;letter-spacing:-0.5px}
     .big-score{font-family:var(--font-head);font-size:5.5rem;font-weight:800;line-height:1;letter-spacing:-3px;margin-bottom:8px}
@@ -164,6 +172,22 @@
     .confidence-alert{background:rgba(255,77,109,0.07);border:1px solid rgba(255,77,109,0.25);border-left:3px solid var(--danger);border-radius:12px;padding:16px 18px;margin-bottom:28px;text-align:left}
     .confidence-alert .alert-title{font-family:var(--font-head);font-weight:700;color:var(--danger);font-size:0.85rem;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px}
     .confidence-alert p{color:var(--muted);font-size:0.88rem}
+
+    /* Voice confidence result card */
+    .voice-confidence-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:28px}
+    .voice-confidence-card h3{font-family:var(--font-head);font-size:1rem;font-weight:700;margin-bottom:20px;color:var(--text)}
+    .vc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+    .vc-metric{background:var(--surface);border-radius:12px;padding:16px;text-align:center}
+    .vc-metric .vc-val{font-family:var(--font-head);font-size:1.8rem;font-weight:800;line-height:1;margin-bottom:4px}
+    .vc-metric .vc-lbl{font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+    .vc-bar-row{margin-bottom:10px}
+    .vc-bar-label{display:flex;justify-content:space-between;margin-bottom:5px;font-size:0.8rem;color:var(--muted)}
+    .vc-bar-label span:last-child{color:var(--text);font-weight:600}
+    .vc-bar-track{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+    .vc-bar-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
+    .vc-insight{background:rgba(123,97,255,0.08);border:1px solid rgba(123,97,255,0.2);border-radius:10px;padding:12px 14px;font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:16px}
+    .vc-insight strong{color:var(--accent2)}
+
     .results-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px}
     .results-grid .card{text-align:center}
     .chart-wrap{display:flex;justify-content:center;margin-bottom:8px}
@@ -204,8 +228,7 @@
     .empty-state .empty-icon{font-size:3rem;margin-bottom:14px}
     .empty-state h3{font-family:var(--font-head);margin-bottom:8px;color:var(--text)}
 
-    /* TOAST */
-    .toast{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--border);color:var(--text);padding:12px 18px;border-radius:10px;font-size:0.85rem;z-index:999;transform:translateY(80px);transition:.3s;max-width:300px}
+    .toast{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--border);color:var(--text);padding:12px 18px;border-radius:10px;font-size:0.85rem;z-index:999;transform:translateY(80px);transition:.3s;max-width:320px}
     .toast.show{transform:translateY(0)}
     .toast.success{border-color:var(--success)}
     .toast.error{border-color:var(--danger)}
@@ -216,6 +239,7 @@
       .roles-grid{grid-template-columns:1fr}
       .results-grid{grid-template-columns:1fr}
       .stats-row{grid-template-columns:1fr}
+      .vc-grid{grid-template-columns:1fr}
       .landing-title{font-size:2rem}
       .big-score{font-size:4rem}
     }
@@ -236,12 +260,12 @@
     <div class="landing-inner">
       <div class="badge">AI-Powered Interview Intelligence</div>
       <h1 class="landing-title">Know if you'll pass<br><span class="accent">before</span> you <span class="accent2">fail.</span></h1>
-      <p class="landing-sub">PlaceIQ simulates real placement interviews with full voice AI, scores your answers, and detects your confidence gap — the hidden reason most students fail.</p>
+      <p class="landing-sub">PlaceIQ simulates real placement interviews, evaluates your answers with AI, and measures your vocal confidence — the hidden metric interviewers always notice.</p>
       <div class="features-row">
-        <div class="feature-card"><div class="feature-icon">🎙️</div><h4>Voice Interview</h4><p>AI speaks. You speak back. Real interview feel.</p></div>
-        <div class="feature-card"><div class="feature-icon">🤖</div><h4>AI Evaluation</h4><p>Instant scoring on technical depth and clarity.</p></div>
-        <div class="feature-card"><div class="feature-icon">📊</div><h4>Risk Score</h4><p>Know your exact placement readiness level.</p></div>
-        <div class="feature-card"><div class="feature-icon">⚡</div><h4>Confidence Gap™</h4><p>Finds when confident answers are wrong.</p></div>
+        <div class="feature-card"><div class="feature-icon">🎙️</div><h4>Voice Answers</h4><p>Speak your answers like a real interview.</p></div>
+        <div class="feature-card"><div class="feature-icon">📈</div><h4>Confidence Score</h4><p>Measures your vocal pace, fluency and certainty.</p></div>
+        <div class="feature-card"><div class="feature-icon">📊</div><h4>Risk Report</h4><p>Full placement readiness breakdown.</p></div>
+        <div class="feature-card"><div class="feature-icon">⚡</div><h4>Confidence Gap™</h4><p>Finds when confident tone hides weak answers.</p></div>
       </div>
       <div class="landing-cta">
         <button class="btn" onclick="showAuth('signup')" style="font-size:1rem;padding:16px 36px">Start Free Interview →</button>
@@ -291,11 +315,11 @@
   <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px">
     <div class="role-inner">
       <h2>Set up your interview</h2>
-      <p>Choose your role and how you want to practice.</p>
-      <div class="section-label">Interview Mode</div>
+      <p>Choose your role and how you want to answer.</p>
+      <div class="section-label">Answer Mode</div>
       <div class="mode-toggle">
-        <button class="mode-btn selected" id="mode-text" onclick="selectMode('text')"><span class="mode-icon">⌨️</span>Text Mode</button>
-        <button class="mode-btn" id="mode-voice" onclick="selectMode('voice')"><span class="mode-icon">🎙️</span>Voice Mode</button>
+        <button class="mode-btn selected" id="mode-text" onclick="selectMode('text')"><span class="mode-icon">⌨️</span>Type Answers</button>
+        <button class="mode-btn" id="mode-voice" onclick="selectMode('voice')"><span class="mode-icon">🎙️</span>Speak Answers</button>
       </div>
       <div class="section-label">Target Role</div>
       <div class="roles-grid">
@@ -326,6 +350,7 @@
       </div>
       <span style="color:var(--muted);font-size:0.85rem">Question <span id="q-num">1</span> of 5</span>
     </div>
+
     <div class="q-label">Question</div>
     <div class="question-box loading" id="question-box">
       <div class="spinner"></div><span>Generating your question...</span>
@@ -343,23 +368,39 @@
 
     <!-- VOICE MODE -->
     <div id="voice-mode-ui" class="voice-interview-ui">
-      <div class="ai-avatar-wrap">
-        <div class="ring ring1 hidden" id="ring1"></div>
-        <div class="ring ring2 hidden" id="ring2"></div>
-        <div class="ring ring3 hidden" id="ring3"></div>
-        <div class="ai-avatar" id="ai-avatar">🤖</div>
+
+      <!-- Live waveform visualizer -->
+      <div class="waveform-wrap waveform-idle" id="waveform-wrap">
+        <!-- bars injected by JS -->
       </div>
-      <div class="voice-status" id="voice-status">Waiting...</div>
+
+      <!-- Live confidence bar -->
+      <div class="confidence-live-wrap">
+        <div class="confidence-live-label">
+          <span>Voice Confidence</span>
+          <span id="conf-live-val">0%</span>
+        </div>
+        <div class="confidence-live-track">
+          <div class="confidence-live-fill" id="conf-live-fill"></div>
+        </div>
+      </div>
+
+      <!-- Transcript -->
       <div class="transcript-box">
         <div class="transcript-label">Your spoken answer</div>
-        <div id="transcript-text"><span class="transcript-placeholder">Press the mic button and speak your answer...</span></div>
+        <div id="transcript-text"><span class="transcript-placeholder">Press 🎤 and speak your answer clearly...</span></div>
+      </div>
+
+      <!-- Mic + actions -->
+      <div class="mic-area">
+        <button class="mic-btn" id="mic-btn" onclick="toggleMic()">🎤</button>
+        <div class="mic-status" id="mic-status">Press to start speaking</div>
       </div>
       <div class="voice-actions">
-        <button class="mic-btn" id="mic-btn" onclick="toggleMic()" title="Press to speak">🎤</button>
-        <button class="btn btn-secondary" id="voice-submit-btn" onclick="submitVoiceAnswer()" disabled>Submit Answer →</button>
+        <button class="btn" id="voice-submit-btn" onclick="submitVoiceAnswer()" disabled>Submit Answer →</button>
+        <button class="btn btn-secondary" onclick="reRecord()">Re-record</button>
         <button class="btn-ghost" onclick="skipQuestion()">Skip</button>
       </div>
-      <div class="voice-hint" id="voice-hint">Press 🎤 to speak your answer</div>
     </div>
   </div>
 </div>
@@ -373,6 +414,7 @@
       <div class="eval-score-chip"><div class="val" id="eval-tech">—</div><div class="lbl">Technical</div></div>
       <div class="eval-score-chip"><div class="val" id="eval-clarity">—</div><div class="lbl">Clarity</div></div>
       <div class="eval-score-chip"><div class="val" id="eval-depth">—</div><div class="lbl">Depth</div></div>
+      <div class="eval-score-chip"><div class="val" id="eval-voice-conf" style="color:var(--accent2)">—</div><div class="lbl">Voice Conf.</div></div>
     </div>
     <div class="eval-feedback" id="eval-feedback">Loading feedback...</div>
     <button class="btn" style="width:100%;justify-content:center" onclick="nextQuestion()">Next Question →</button>
@@ -395,10 +437,44 @@
       <div style="color:var(--muted);font-size:0.85rem;margin-bottom:14px">out of 100</div>
       <div class="risk-pill" id="risk-pill">—</div>
     </div>
+
     <div class="confidence-alert" id="confidence-alert" style="display:none">
       <div class="alert-title">⚡ Confidence Gap Detected</div>
       <p id="confidence-alert-text"></p>
     </div>
+
+    <!-- VOICE CONFIDENCE ANALYSIS CARD -->
+    <div class="voice-confidence-card" id="voice-confidence-card" style="display:none">
+      <h3>🎙️ Voice Confidence Analysis</h3>
+      <div class="vc-grid">
+        <div class="vc-metric">
+          <div class="vc-val" id="vc-overall" style="color:var(--accent)">—</div>
+          <div class="vc-lbl">Overall Confidence</div>
+        </div>
+        <div class="vc-metric">
+          <div class="vc-val" id="vc-fluency" style="color:var(--accent2)">—</div>
+          <div class="vc-lbl">Speech Fluency</div>
+        </div>
+        <div class="vc-metric">
+          <div class="vc-val" id="vc-pace" style="color:var(--warn)">—</div>
+          <div class="vc-lbl">Answer Pace</div>
+        </div>
+      </div>
+      <div class="vc-bar-row">
+        <div class="vc-bar-label"><span>Vocabulary Richness</span><span id="vc-vocab-val">—</span></div>
+        <div class="vc-bar-track"><div class="vc-bar-fill" id="vc-vocab-fill" style="background:var(--accent)"></div></div>
+      </div>
+      <div class="vc-bar-row">
+        <div class="vc-bar-label"><span>Answer Completeness</span><span id="vc-complete-val">—</span></div>
+        <div class="vc-bar-track"><div class="vc-bar-fill" id="vc-complete-fill" style="background:var(--accent2)"></div></div>
+      </div>
+      <div class="vc-bar-row">
+        <div class="vc-bar-label"><span>Filler Words (lower is better)</span><span id="vc-filler-val">—</span></div>
+        <div class="vc-bar-track"><div class="vc-bar-fill" id="vc-filler-fill" style="background:var(--danger)"></div></div>
+      </div>
+      <div class="vc-insight" id="vc-insight"></div>
+    </div>
+
     <div class="results-grid">
       <div class="card">
         <div style="font-family:var(--font-head);font-size:0.85rem;font-weight:700;margin-bottom:16px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Skill Radar</div>
@@ -409,6 +485,7 @@
         <div id="score-bars"></div>
       </div>
     </div>
+
     <div class="roadmap-section">
       <h3>📍 Improvement Roadmap</h3>
       <div id="roadmap-steps"><div style="color:var(--muted);font-size:0.9rem">Generating your personalized roadmap...</div></div>
@@ -445,54 +522,45 @@
   </div>
 </div>
 
-<!-- ElevenLabs Key Modal -->
-<div id="el-modal" style="display:none;position:fixed;inset:0;background:rgba(8,9,13,0.92);backdrop-filter:blur(8px);z-index:500;align-items:center;justify-content:center">
-  <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;max-width:460px;width:90%">
-    <div style="font-family:var(--font-head);font-size:1.2rem;font-weight:800;margin-bottom:8px">🎙️ Set Up Voice Mode</div>
-    <p style="color:var(--muted);font-size:0.88rem;margin-bottom:20px;line-height:1.6">Voice mode uses ElevenLabs for natural AI speech. Get your free key in 2 minutes — no credit card needed.</p>
-    <div style="background:var(--surface);border-radius:10px;padding:14px 16px;margin-bottom:20px;font-size:0.82rem;color:var(--muted);line-height:2">
-      1. Go to <strong style="color:var(--accent)">elevenlabs.io</strong> → Sign up free<br>
-      2. Click your profile icon → <strong style="color:var(--text)">API Keys</strong><br>
-      3. Copy your key and paste it below
-    </div>
-    <div class="form-group"><label>ElevenLabs API Key</label><input type="text" id="el-key-input" placeholder="sk_xxxxxxxxxxxxxxxxxxxxxxxx"/></div>
-    <div style="display:flex;gap:10px">
-      <button class="btn" style="flex:1;justify-content:center" onclick="saveElevenLabsKey()">Save & Start →</button>
-      <button class="btn btn-secondary" onclick="closeElModal()">Cancel</button>
-    </div>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <script>
   const API = 'http://localhost:4000/api';
-  const VOICE_ID = 'EXAVITQu4vr4xnSDxMaL'; // ElevenLabs "Sarah" voice
 
   let token = localStorage.getItem('placeiq_token');
   let currentUser = JSON.parse(localStorage.getItem('placeiq_user') || 'null');
-  let elKey = localStorage.getItem('placeiq_el_key') || '';
   let selectedRole = '';
   let interviewMode = 'text';
   let currentQuestion = '';
   let questionNumber = 0;
   let allAnswers = [];
   let radarChartInstance = null;
+
+  // Voice state
   let recognition = null;
   let isRecording = false;
   let spokenTranscript = '';
-  let currentAudio = null;
+  let voiceMetricsPerQ = []; // stores per-question voice metrics
+  let recordingStartTime = 0;
+  let interimWordCount = 0;
+  let fillerCount = 0;
+  let waveAnimId = null;
+  let audioCtx = null;
+  let analyser = null;
+  let micStream = null;
+
+  const FILLER_WORDS = ['um','uh','like','you know','basically','actually','literally','sort of','kind of','i mean','right','okay','so'];
 
   window.onload = () => {
     if (token && currentUser) { updateNavUser(); showScreen('screen-dashboard'); loadDashboard(); }
+    buildWaveform();
   };
 
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    window.scrollTo(0,0);
+    window.scrollTo(0, 0);
   }
-
   function updateNavUser() {
     if (!currentUser) return;
     ['nav-user-name','dash-user-name'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=currentUser.name; });
@@ -506,20 +574,18 @@
     document.getElementById('tab-login').classList.toggle('active', tab==='login');
     document.getElementById('tab-signup').classList.toggle('active', tab==='signup');
     document.getElementById('auth-title').textContent = tab==='login'?'Welcome back':'Create account';
-    document.getElementById('auth-subtitle').textContent = tab==='login'?'Log in to continue your interview prep.':'Start your AI interview journey for free.';
+    document.getElementById('auth-subtitle').textContent = tab==='login'?'Log in to continue.':'Start your journey for free.';
     document.getElementById('auth-footer-text').innerHTML = tab==='login'
       ? "Don't have an account? <a onclick=\"switchAuthTab('signup')\">Sign up free</a>"
       : "Already have an account? <a onclick=\"switchAuthTab('login')\">Log in</a>";
-    document.getElementById('auth-error').style.display = 'none';
+    document.getElementById('auth-error').style.display='none';
   }
   async function handleLogin() {
     const email=document.getElementById('login-email').value.trim(), password=document.getElementById('login-password').value;
     if(!email||!password) return showAuthError('Please fill in all fields.');
     try {
       const res=await fetch(`${API}/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
-      const data=await res.json();
-      if(!res.ok) return showAuthError(data.message||'Login failed');
-      saveAuth(data);
+      const data=await res.json(); if(!res.ok) return showAuthError(data.message||'Login failed'); saveAuth(data);
     } catch(e) { showAuthError('Could not connect to server.'); }
   }
   async function handleSignup() {
@@ -528,24 +594,16 @@
     if(password.length<6) return showAuthError('Password must be at least 6 characters.');
     try {
       const res=await fetch(`${API}/auth/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,password})});
-      const data=await res.json();
-      if(!res.ok) return showAuthError(data.message||'Signup failed');
-      saveAuth(data);
+      const data=await res.json(); if(!res.ok) return showAuthError(data.message||'Signup failed'); saveAuth(data);
     } catch(e) { showAuthError('Could not connect to server.'); }
   }
   function saveAuth(data) {
     token=data.token; currentUser=data.user;
-    localStorage.setItem('placeiq_token',token);
-    localStorage.setItem('placeiq_user',JSON.stringify(currentUser));
-    updateNavUser(); showScreen('screen-role');
-    showToast('Welcome, '+currentUser.name+'! 👋','success');
+    localStorage.setItem('placeiq_token',token); localStorage.setItem('placeiq_user',JSON.stringify(currentUser));
+    updateNavUser(); showScreen('screen-role'); showToast('Welcome, '+currentUser.name+'! 👋','success');
   }
   function showAuthError(msg) { const el=document.getElementById('auth-error'); el.textContent=msg; el.style.display='block'; }
-  function logout() {
-    token=null; currentUser=null;
-    localStorage.removeItem('placeiq_token'); localStorage.removeItem('placeiq_user');
-    showScreen('screen-landing');
-  }
+  function logout() { token=null; currentUser=null; localStorage.removeItem('placeiq_token'); localStorage.removeItem('placeiq_user'); showScreen('screen-landing'); }
 
   // MODE & ROLE
   function selectMode(mode) {
@@ -553,30 +611,96 @@
     document.getElementById('mode-text').classList.toggle('selected',mode==='text');
     document.getElementById('mode-voice').classList.toggle('selected',mode==='voice');
   }
-  function selectRole(el, role) {
+  function selectRole(el,role) {
     document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
     el.classList.add('selected'); selectedRole=role;
     document.getElementById('start-btn').disabled=false;
   }
 
-  // ELEVENLABS MODAL
-  function openElModal() { const m=document.getElementById('el-modal'); m.style.display='flex'; if(elKey) document.getElementById('el-key-input').value=elKey; }
-  function closeElModal() { document.getElementById('el-modal').style.display='none'; }
-  function saveElevenLabsKey() {
-    const key=document.getElementById('el-key-input').value.trim();
-    if(!key) return showToast('Please enter your API key','error');
-    elKey=key; localStorage.setItem('placeiq_el_key',key);
-    closeElModal(); showToast('Voice mode ready! 🎙️','success'); beginInterview();
+  // WAVEFORM
+  function buildWaveform() {
+    const wrap=document.getElementById('waveform-wrap');
+    if(!wrap) return;
+    wrap.innerHTML='';
+    for(let i=0;i<32;i++){
+      const bar=document.createElement('div');
+      bar.className='waveform-bar'; bar.style.height='8px';
+      wrap.appendChild(bar);
+    }
+  }
+  function animateWaveform(active) {
+    const wrap=document.getElementById('waveform-wrap');
+    const bars=wrap?.querySelectorAll('.waveform-bar');
+    if(!bars) return;
+    if(!active) {
+      wrap.className='waveform-wrap waveform-idle';
+      bars.forEach(b=>{ b.style.height='8px'; });
+      if(waveAnimId){cancelAnimationFrame(waveAnimId);waveAnimId=null;}
+      return;
+    }
+    wrap.className='waveform-wrap waveform-active';
+    const animate=()=>{
+      bars.forEach(b=>{
+        const h=Math.random()*44+4;
+        b.style.height=h+'px';
+      });
+      waveAnimId=requestAnimationFrame(()=>setTimeout(animate,80));
+    };
+    animate();
   }
 
-  // START
+  // VOICE CONFIDENCE ANALYSIS — calculated from transcript
+  function analyzeVoiceConfidence(transcript, durationSeconds) {
+    const words = transcript.trim().split(/\s+/).filter(w=>w.length>0);
+    const wordCount = words.length;
+    if(wordCount === 0) return { overall:0, fluency:0, pace:'Slow', vocabRichness:0, completeness:0, fillerPct:0, fillerCount:0 };
+
+    // Filler word count
+    const lowerTranscript = transcript.toLowerCase();
+    let fc = 0;
+    FILLER_WORDS.forEach(f => {
+      const regex = new RegExp('\\b'+f+'\\b','gi');
+      const matches = lowerTranscript.match(regex);
+      if(matches) fc += matches.length;
+    });
+
+    // Unique words / vocab richness
+    const uniqueWords = new Set(words.map(w=>w.toLowerCase().replace(/[^a-z]/g,'')));
+    const vocabRichness = Math.min(100, Math.round((uniqueWords.size / wordCount) * 100 * 1.2));
+
+    // Words per minute
+    const wpm = durationSeconds > 0 ? Math.round((wordCount / durationSeconds) * 60) : 0;
+    let pace, paceScore;
+    if(wpm < 80){ pace='Too Slow'; paceScore=40; }
+    else if(wpm < 120){ pace='Good'; paceScore=85; }
+    else if(wpm < 160){ pace='Ideal'; paceScore=100; }
+    else if(wpm < 200){ pace='Fast'; paceScore=75; }
+    else{ pace='Too Fast'; paceScore=45; }
+
+    // Completeness based on word count
+    const completeness = Math.min(100, Math.round((wordCount / 80) * 100));
+
+    // Filler percentage
+    const fillerPct = Math.min(100, Math.round((fc / wordCount) * 100));
+
+    // Fluency = low filler + good vocab
+    const fluency = Math.max(0, Math.round(100 - (fillerPct * 2.5) + (vocabRichness * 0.2)));
+
+    // Overall confidence score
+    const overall = Math.round(
+      paceScore * 0.25 +
+      Math.max(0, 100 - fillerPct * 3) * 0.30 +
+      vocabRichness * 0.25 +
+      completeness * 0.20
+    );
+
+    return { overall: Math.min(100,overall), fluency: Math.min(100,fluency), pace, paceScore, vocabRichness, completeness, fillerPct, fillerCount: fc, wpm };
+  }
+
+  // START INTERVIEW
   function startInterview() {
     if(!selectedRole) return;
-    if(interviewMode==='voice' && !elKey) { openElModal(); return; }
-    beginInterview();
-  }
-  function beginInterview() {
-    questionNumber=0; allAnswers=[]; spokenTranscript='';
+    questionNumber=0; allAnswers=[]; voiceMetricsPerQ=[]; spokenTranscript='';
     document.getElementById('interview-role-label').textContent=selectedRole+' Interview';
     document.getElementById('interview-mode-badge').textContent=interviewMode==='voice'?'🎙️ Voice':'⌨️ Text';
     document.getElementById('text-mode-ui').style.display=interviewMode==='text'?'block':'none';
@@ -585,16 +709,13 @@
     showScreen('screen-interview'); loadNextQuestion();
   }
 
-  // QUESTION
   async function loadNextQuestion() {
     questionNumber++; updateProgressDots();
     document.getElementById('q-num').textContent=questionNumber;
-    if(interviewMode==='text') { document.getElementById('answer-input').value=''; document.getElementById('submit-btn').disabled=false; }
-    spokenTranscript='';
-    if(interviewMode==='voice') {
-      document.getElementById('transcript-text').innerHTML='<span class="transcript-placeholder">Press the mic button and speak your answer...</span>';
-      document.getElementById('voice-submit-btn').disabled=true;
-      setVoiceStatus('thinking','Generating question...');
+    if(interviewMode==='text'){document.getElementById('answer-input').value='';document.getElementById('submit-btn').disabled=false;}
+    spokenTranscript=''; fillerCount=0;
+    if(interviewMode==='voice'){
+      resetVoiceUI();
     }
     const box=document.getElementById('question-box');
     box.className='question-box loading';
@@ -604,11 +725,11 @@
       const data=await res.json();
       currentQuestion=data.question;
       box.className='question-box'; box.textContent=currentQuestion;
-      if(interviewMode==='voice') await speakText(currentQuestion);
     } catch(e) {
       box.className='question-box'; box.textContent='Could not load question. Check your connection.';
     }
   }
+
   function updateProgressDots() {
     document.querySelectorAll('.progress-dot').forEach((dot,i)=>{
       dot.classList.remove('done','active');
@@ -617,74 +738,40 @@
     });
   }
 
-  // ELEVENLABS TTS
-  async function speakText(text) {
-    setVoiceStatus('speaking','AI is speaking...'); setAvatarState('speaking'); showRings(true,false);
-    try {
-      const res=await fetch('https://api.elevenlabs.io/v1/text-to-speech/'+VOICE_ID,{
-        method:'POST',
-        headers:{'xi-api-key':elKey,'Content-Type':'application/json'},
-        body:JSON.stringify({text,model_id:'eleven_monolingual_v1',voice_settings:{stability:0.5,similarity_boost:0.75}})
-      });
-      if(!res.ok) throw new Error('ElevenLabs '+res.status);
-      const blob=await res.blob();
-      const url=URL.createObjectURL(blob);
-      if(currentAudio){currentAudio.pause();currentAudio=null;}
-      currentAudio=new Audio(url);
-      await new Promise(resolve=>{currentAudio.onended=resolve;currentAudio.onerror=resolve;currentAudio.play();});
-    } catch(e) {
-      console.log('ElevenLabs error, using browser TTS:',e.message);
-      await browserSpeak(text);
-    } finally {
-      showRings(false); setAvatarState('idle'); setVoiceStatus('','Press 🎤 to answer');
-    }
-  }
-  function browserSpeak(text) {
-    return new Promise(resolve=>{
-      if(!window.speechSynthesis) return resolve();
-      const u=new SpeechSynthesisUtterance(text);
-      u.rate=0.9; u.pitch=1; u.onend=resolve; u.onerror=resolve;
-      window.speechSynthesis.speak(u);
-    });
+  function resetVoiceUI() {
+    document.getElementById('transcript-text').innerHTML='<span class="transcript-placeholder">Press 🎤 and speak your answer clearly...</span>';
+    document.getElementById('voice-submit-btn').disabled=true;
+    document.getElementById('mic-btn').disabled=false;
+    document.getElementById('mic-btn').classList.remove('recording');
+    document.getElementById('mic-btn').textContent='🎤';
+    document.getElementById('mic-status').className='mic-status';
+    document.getElementById('mic-status').textContent='Press to start speaking';
+    document.getElementById('conf-live-val').textContent='0%';
+    document.getElementById('conf-live-fill').style.width='0%';
+    animateWaveform(false);
   }
 
-  // AVATAR
-  function setAvatarState(state) {
-    const a=document.getElementById('ai-avatar');
-    a.className='ai-avatar';
-    if(state==='speaking'){a.classList.add('speaking');a.textContent='🤖';}
-    else if(state==='listening'){a.classList.add('listening');a.textContent='👂';}
-    else if(state==='thinking'){a.textContent='🤔';}
-    else{a.textContent='🤖';}
-  }
-  function setVoiceStatus(type,text) {
-    const el=document.getElementById('voice-status');
-    el.className='voice-status '+(type||''); el.textContent=text||'';
-    document.getElementById('voice-hint').textContent=text||'';
-  }
-  function showRings(show, red) {
-    ['ring1','ring2','ring3'].forEach(id=>{
-      const r=document.getElementById(id);
-      r.classList.toggle('hidden',!show);
-      r.classList.toggle('red',!!red);
-    });
-  }
-
-  // SPEECH RECOGNITION
+  // MIC
   function toggleMic() { isRecording ? stopRecording() : startRecording(); }
+  function reRecord() { stopRecording(); setTimeout(()=>{ spokenTranscript=''; resetVoiceUI(); },100); }
+
   function startRecording() {
     const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-    if(!SR) return showToast('Speech recognition requires Chrome browser.','error');
-    spokenTranscript='';
+    if(!SR) return showToast('Speech recognition needs Chrome browser.','error');
+    spokenTranscript=''; fillerCount=0; recordingStartTime=Date.now();
     recognition=new SR(); recognition.continuous=true; recognition.interimResults=true; recognition.lang='en-US';
+
     recognition.onstart=()=>{
       isRecording=true;
       document.getElementById('mic-btn').classList.add('recording');
       document.getElementById('mic-btn').textContent='⏹️';
-      setVoiceStatus('listening','Listening... speak now'); setAvatarState('listening'); showRings(true,true);
+      document.getElementById('mic-status').className='mic-status listening';
+      document.getElementById('mic-status').textContent='Listening... speak now';
+      animateWaveform(true);
     };
+
     recognition.onresult=(event)=>{
-      let interim='',final='';
+      let interim='', final='';
       for(let i=event.resultIndex;i<event.results.length;i++){
         if(event.results[i].isFinal) final+=event.results[i][0].transcript+' ';
         else interim+=event.results[i][0].transcript;
@@ -692,19 +779,38 @@
       spokenTranscript+=final;
       const display=spokenTranscript+(interim?'<em style="color:var(--muted)">'+interim+'</em>':'');
       document.getElementById('transcript-text').innerHTML=display||'<span class="transcript-placeholder">Listening...</span>';
+
+      // Live confidence estimate
+      const elapsed=(Date.now()-recordingStartTime)/1000;
+      const liveMetrics=analyzeVoiceConfidence(spokenTranscript+(interim||''), elapsed);
+      const conf=liveMetrics.overall;
+      document.getElementById('conf-live-val').textContent=conf+'%';
+      const fill=document.getElementById('conf-live-fill');
+      fill.style.width=conf+'%';
+      fill.style.background=conf>=70?'var(--success)':conf>=45?'var(--warn)':'var(--danger)';
+
       if(spokenTranscript.trim().length>0) document.getElementById('voice-submit-btn').disabled=false;
     };
+
     recognition.onerror=(e)=>{ stopRecording(); if(e.error!=='no-speech') showToast('Mic error: '+e.error,'error'); };
     recognition.onend=()=>{ if(isRecording) stopRecording(); };
     recognition.start();
   }
+
   function stopRecording() {
     isRecording=false;
     if(recognition){recognition.stop();recognition=null;}
+    animateWaveform(false);
     document.getElementById('mic-btn').classList.remove('recording');
     document.getElementById('mic-btn').textContent='🎤';
-    showRings(false); setAvatarState('idle');
-    setVoiceStatus('',spokenTranscript.trim()?'Answer recorded. Submit or re-record.':'Nothing heard. Try again.');
+    if(spokenTranscript.trim()){
+      document.getElementById('mic-status').className='mic-status done';
+      document.getElementById('mic-status').textContent='✓ Answer recorded — submit or re-record';
+      document.getElementById('voice-submit-btn').disabled=false;
+    } else {
+      document.getElementById('mic-status').className='mic-status';
+      document.getElementById('mic-status').textContent='Nothing heard. Try again.';
+    }
   }
 
   // SUBMIT
@@ -713,42 +819,59 @@
     if(!answer) return showToast('Please write an answer first.','error');
     document.getElementById('submit-btn').disabled=true;
     document.getElementById('submit-btn').textContent='Evaluating...';
-    await evaluateAndStore(answer);
+    await evaluateAndStore(answer, null);
     document.getElementById('submit-btn').textContent='Submit Answer →';
   }
+
   async function submitVoiceAnswer() {
     const answer=spokenTranscript.trim();
     if(!answer) return showToast('No answer recorded. Press the mic and speak.','error');
+    if(isRecording) stopRecording();
     document.getElementById('voice-submit-btn').disabled=true;
     document.getElementById('mic-btn').disabled=true;
-    setVoiceStatus('thinking','Evaluating your answer...'); setAvatarState('thinking');
-    await evaluateAndStore(answer);
+    document.getElementById('mic-status').textContent='Evaluating...';
+
+    const durationSeconds=(Date.now()-recordingStartTime)/1000;
+    const voiceMetrics=analyzeVoiceConfidence(answer, durationSeconds);
+    voiceMetricsPerQ.push(voiceMetrics);
+
+    await evaluateAndStore(answer, voiceMetrics);
     document.getElementById('mic-btn').disabled=false;
   }
-  async function evaluateAndStore(answer) {
+
+  async function evaluateAndStore(answer, voiceMetrics) {
     try {
       const res=await fetch(`${API}/interview/evaluate`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({question:currentQuestion,answer,role:selectedRole})});
       const data=await res.json();
       data.question=currentQuestion; data.answer=answer;
+      if(voiceMetrics) data.voiceConfidence=voiceMetrics.overall;
       allAnswers.push(data);
-      await showEvalOverlay(data);
+      showEvalOverlay(data, voiceMetrics);
     } catch(e) { showToast('Evaluation failed. Skipping.','error'); await proceedAfterAnswer(); }
   }
+
   function skipQuestion() {
     if(isRecording) stopRecording();
-    allAnswers.push({question:currentQuestion,answer:'',technical:1,clarity:1,depth:1,confidenceGap:0,feedback:'Skipped.'});
+    allAnswers.push({question:currentQuestion,answer:'',technical:1,clarity:1,depth:1,confidenceGap:0,feedback:'Skipped.',voiceConfidence:0});
+    if(interviewMode==='voice') voiceMetricsPerQ.push({overall:0,fluency:0,pace:'—',vocabRichness:0,completeness:0,fillerPct:0,fillerCount:0});
     proceedAfterAnswer();
   }
-  async function showEvalOverlay(data) {
+
+  function showEvalOverlay(data, voiceMetrics) {
     document.getElementById('eval-tech').textContent=data.technical+'/10';
     document.getElementById('eval-clarity').textContent=data.clarity+'/10';
     document.getElementById('eval-depth').textContent=data.depth+'/10';
+    const vcChip=document.getElementById('eval-voice-conf');
+    if(voiceMetrics){
+      vcChip.textContent=voiceMetrics.overall+'%';
+      vcChip.closest('.eval-score-chip').style.display='block';
+    } else {
+      vcChip.closest('.eval-score-chip').style.display='none';
+    }
     document.getElementById('eval-feedback').textContent=data.feedback||'Good effort.';
     document.getElementById('eval-overlay').classList.add('show');
-    if(interviewMode==='voice' && data.feedback) {
-      await speakText('Score: '+data.technical+' out of 10. '+data.feedback);
-    }
   }
+
   function nextQuestion() { document.getElementById('eval-overlay').classList.remove('show'); proceedAfterAnswer(); }
   async function proceedAfterAnswer() {
     if(allAnswers.length>=5) await finishInterview(); else await loadNextQuestion();
@@ -756,18 +879,15 @@
 
   // FINISH
   async function finishInterview() {
-    if(interviewMode==='voice') await speakText('Interview complete! Calculating your placement readiness score.');
     showScreen('screen-results');
     document.getElementById('final-score-display').textContent='...';
     document.getElementById('risk-pill').textContent='Calculating...';
+    document.getElementById('voice-confidence-card').style.display='none';
+
     try {
       const res=await fetch(`${API}/interview/finish`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({role:selectedRole,answers:allAnswers})});
       const data=await res.json();
       renderResults(data.interview);
-      if(interviewMode==='voice'){
-        const iv=data.interview;
-        await speakText('Your final score is '+iv.finalScore+' out of 100. Risk level: '+iv.riskLevel+'. Check your improvement roadmap below.');
-      }
     } catch(e) {
       const avg=key=>allAnswers.reduce((a,b)=>a+(b[key]||0),0)/allAnswers.length;
       const t=Math.round(avg('technical')*10),c=Math.round(avg('clarity')*10),d=Math.round(avg('depth')*10),g=Math.round(avg('confidenceGap'));
@@ -779,27 +899,66 @@
 
   function renderResults(iv) {
     const {finalScore,technicalScore,clarityScore,depthScore,confidenceGap,riskLevel,roadmap}=iv;
+
     const se=document.getElementById('final-score-display');
     se.textContent=finalScore; se.className='big-score '+riskLevel.toLowerCase();
+
     const pill=document.getElementById('risk-pill');
     const emoji={Low:'✅',Medium:'⚠️',High:'🚨'}[riskLevel]||'—';
     pill.textContent=emoji+' '+riskLevel.toUpperCase()+' RISK';
     pill.className='risk-pill '+riskLevel.toLowerCase();
+
     if(confidenceGap>25){
       document.getElementById('confidence-alert').style.display='block';
-      document.getElementById('confidence-alert-text').textContent='You answered with confidence, but accuracy lagged by '+confidenceGap+' points. This is the #1 reason candidates fail technical rounds despite feeling prepared.';
+      document.getElementById('confidence-alert-text').textContent='You answered with confidence but accuracy lagged by '+confidenceGap+' points. This is the #1 reason candidates fail technical rounds despite feeling prepared.';
     }
+
+    // VOICE CONFIDENCE RESULT CARD
+    if(interviewMode==='voice' && voiceMetricsPerQ.length>0){
+      document.getElementById('voice-confidence-card').style.display='block';
+      const avgMetric=key=>Math.round(voiceMetricsPerQ.reduce((a,b)=>a+(b[key]||0),0)/voiceMetricsPerQ.length);
+      const avgOverall=avgMetric('overall');
+      const avgFluency=avgMetric('fluency');
+      const avgVocab=avgMetric('vocabRichness');
+      const avgComplete=avgMetric('completeness');
+      const avgFiller=avgMetric('fillerPct');
+      // Most common pace
+      const paces=voiceMetricsPerQ.map(m=>m.pace);
+      const paceMode=paces.sort((a,b)=>paces.filter(v=>v===a).length-paces.filter(v=>v===b).length).pop();
+
+      document.getElementById('vc-overall').textContent=avgOverall+'%';
+      document.getElementById('vc-fluency').textContent=avgFluency+'%';
+      document.getElementById('vc-pace').textContent=paceMode||'—';
+      document.getElementById('vc-vocab-val').textContent=avgVocab+'%';
+      document.getElementById('vc-vocab-fill').style.width=avgVocab+'%';
+      document.getElementById('vc-complete-val').textContent=avgComplete+'%';
+      document.getElementById('vc-complete-fill').style.width=avgComplete+'%';
+      document.getElementById('vc-filler-val').textContent=avgFiller+'%';
+      document.getElementById('vc-filler-fill').style.width=Math.min(100,avgFiller*3)+'%';
+
+      // Personalized insight
+      let insight='';
+      if(avgFiller>20) insight='<strong>High filler word usage ('+avgFiller+'%)</strong> — words like "um", "uh", and "like" reduce perceived confidence. Practice pausing silently instead of filling gaps.';
+      else if(avgOverall>=75) insight='<strong>Strong vocal presence!</strong> Your speech was fluent and well-paced. Focus on deepening technical accuracy to match your confident delivery.';
+      else if(avgComplete<50) insight='<strong>Answers were too brief.</strong> Interviewers expect 60-120 word responses for technical questions. Aim to elaborate more on each point.';
+      else if(paceMode==='Too Fast') insight='<strong>Speaking too fast</strong> signals nervousness. Slow down to 120-150 words per minute — it projects confidence and gives you time to think.';
+      else insight='<strong>Moderate confidence detected.</strong> Work on reducing hesitations and expanding your vocabulary to sound more authoritative in technical discussions.';
+      document.getElementById('vc-insight').innerHTML=insight;
+    }
+
     if(radarChartInstance) radarChartInstance.destroy();
     radarChartInstance=new Chart(document.getElementById('radarChart'),{
       type:'radar',
       data:{labels:['Technical','Clarity','Depth'],datasets:[{label:'You',data:[technicalScore,clarityScore,depthScore],backgroundColor:'rgba(0,229,255,0.15)',borderColor:'#00e5ff',pointBackgroundColor:'#00e5ff',borderWidth:2}]},
       options:{scales:{r:{min:0,max:100,ticks:{color:'#5a6070',stepSize:20},grid:{color:'#1e2130'},pointLabels:{color:'#e8eaf0',font:{size:12}}}},plugins:{legend:{display:false}},animation:{duration:1000}}
     });
+
     const bars=document.getElementById('score-bars');
     bars.innerHTML='';
     [['Technical Accuracy',technicalScore],['Clarity',clarityScore],['Depth',depthScore]].forEach(([label,value])=>{
       bars.innerHTML+='<div class="score-bar-row"><div class="score-bar-label"><span>'+label+'</span><span>'+value+'%</span></div><div class="score-bar-track"><div class="score-bar-fill" style="width:'+value+'%"></div></div></div>';
     });
+
     const re=document.getElementById('roadmap-steps');
     if(roadmap&&roadmap.length>0){
       re.innerHTML=roadmap.map((step,i)=>'<div class="roadmap-step" style="animation-delay:'+(i*.1)+'s"><div class="step-num">'+(i+1)+'</div><div class="step-text">'+step+'</div></div>').join('');
@@ -840,4 +999,3 @@
 </script>
 </body>
 </html>
-sk_359397644b614e42a84e5cc05f1038eaaafda419b7d7a6bc
