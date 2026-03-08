@@ -11,7 +11,12 @@ const app = express();
 
 connectDB();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://place-iq-know-before-you-get-placed.vercel.app",
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
