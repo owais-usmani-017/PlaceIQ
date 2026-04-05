@@ -29,8 +29,8 @@ body {
   font-family: var(--font-body);
   font-size: 15px;
   line-height: 1.6;
-  min-height: 100vh;
-  overflow-x: hidden;
+  height: 100vh;
+  overflow: hidden;
 }
 body::before {
   content: "";
@@ -43,9 +43,12 @@ body::before {
 }
 .screen {
   display: none;
-  min-height: 100vh;
-  position: relative;
+  position: fixed;
+  inset: 0;
   z-index: 1;
+  overflow-y: auto;
+  width: 100%;
+  height: 100vh;
 }
 .screen.active {
   display: flex;
