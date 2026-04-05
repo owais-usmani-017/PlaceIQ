@@ -8,11 +8,10 @@ let questionNumber = 0;
 let allAnswers = [];
 let radarChartInstance = null;
 
-// Voice state
 let recognition = null;
 let isRecording = false;
 let spokenTranscript = "";
-let voiceMetricsPerQ = []; // stores per-question voice metrics
+let voiceMetricsPerQ = [];
 let recordingStartTime = 0;
 let interimWordCount = 0;
 let fillerCount = 0;
@@ -53,6 +52,7 @@ function showScreen(id) {
   document.getElementById(id).classList.add("active");
   window.scrollTo(0, 0);
 }
+
 function updateNavUser() {
   if (!currentUser) return;
   ["nav-user-name", "dash-user-name"].forEach((id) => {
@@ -61,11 +61,11 @@ function updateNavUser() {
   });
 }
 
-// AUTH
 function showAuth(tab) {
   showScreen("screen-auth");
   switchAuthTab(tab);
 }
+
 function switchAuthTab(tab) {
   document.getElementById("form-login").style.display =
     tab === "login" ? "block" : "none";
@@ -87,6 +87,7 @@ function switchAuthTab(tab) {
       : "Already have an account? <a onclick=\"switchAuthTab('login')\">Log in</a>";
   document.getElementById("auth-error").style.display = "none";
 }
+
 async function handleLogin() {
   const email = document.getElementById("login-email").value.trim(),
     password = document.getElementById("login-password").value;
@@ -104,6 +105,7 @@ async function handleLogin() {
     showAuthError("Could not connect to server.");
   }
 }
+
 async function handleSignup() {
   const name = document.getElementById("signup-name").value.trim(),
     email = document.getElementById("signup-email").value.trim(),
@@ -125,6 +127,7 @@ async function handleSignup() {
     showAuthError("Could not connect to server.");
   }
 }
+
 function saveAuth(data) {
   token = data.token;
   currentUser = data.user;
@@ -134,11 +137,13 @@ function saveAuth(data) {
   showScreen("screen-role");
   showToast("Welcome, " + currentUser.name + "! 👋", "success");
 }
+
 function showAuthError(msg) {
   const el = document.getElementById("auth-error");
   el.textContent = msg;
   el.style.display = "block";
 }
+
 function logout() {
   token = null;
   currentUser = null;
@@ -147,7 +152,6 @@ function logout() {
   showScreen("screen-landing");
 }
 
-// MODE & ROLE
 function selectMode(mode) {
   interviewMode = mode;
   document
@@ -157,6 +161,7 @@ function selectMode(mode) {
     .getElementById("mode-voice")
     .classList.toggle("selected", mode === "voice");
 }
+
 function selectRole(el, role) {
   document
     .querySelectorAll(".role-card")
@@ -166,7 +171,6 @@ function selectRole(el, role) {
   document.getElementById("start-btn").disabled = false;
 }
 
-// WAVEFORM
 function buildWaveform() {
   const wrap = document.getElementById("waveform-wrap");
   if (!wrap) return;
@@ -178,6 +182,7 @@ function buildWaveform() {
     wrap.appendChild(bar);
   }
 }
+
 function animateWaveform(active) {
   const wrap = document.getElementById("waveform-wrap");
   const bars = wrap?.querySelectorAll(".waveform-bar");
@@ -204,7 +209,6 @@ function animateWaveform(active) {
   animate();
 }
 
-// VOICE CONFIDENCE ANALYSIS — calculated from transcript
 function analyzeVoiceConfidence(transcript, durationSeconds) {
   const words = transcript
     .trim()
@@ -222,7 +226,6 @@ function analyzeVoiceConfidence(transcript, durationSeconds) {
       fillerCount: 0,
     };
 
-  // Filler word count
   const lowerTranscript = transcript.toLowerCase();
   let fc = 0;
   FILLER_WORDS.forEach((f) => {
@@ -231,7 +234,6 @@ function analyzeVoiceConfidence(transcript, durationSeconds) {
     if (matches) fc += matches.length;
   });
 
-  // Unique words / vocab richness
   const uniqueWords = new Set(
     words.map((w) => w.toLowerCase().replace(/[^a-z]/g, "")),
   );
@@ -240,10 +242,10 @@ function analyzeVoiceConfidence(transcript, durationSeconds) {
     Math.round((uniqueWords.size / wordCount) * 100 * 1.2),
   );
 
-  // Words per minute
   const wpm =
     durationSeconds > 0 ? Math.round((wordCount / durationSeconds) * 60) : 0;
-  let pace, paceScore;
+  let pace = "Normal";
+  let paceScore = 85;
   if (wpm < 80) {
     pace = "Too Slow";
     paceScore = 40;
@@ -261,24 +263,18 @@ function analyzeVoiceConfidence(transcript, durationSeconds) {
     paceScore = 45;
   }
 
-  // Completeness based on word count
   const completeness = Math.min(100, Math.round((wordCount / 80) * 100));
-
-  // Filler percentage
   const fillerPct = Math.min(100, Math.round((fc / wordCount) * 100));
-
-  // Fluency = low filler + good vocab
   const fluency = Math.max(
     0,
     Math.round(100 - fillerPct * 2.5 + vocabRichness * 0.2),
   );
 
-  // Overall confidence score
   const overall = Math.round(
     paceScore * 0.25 +
       Math.max(0, 100 - fillerPct * 3) * 0.3 +
       vocabRichness * 0.25 +
-      completeness * 0.2,
+      completeness * 0.2
   );
 
   return {
@@ -294,13 +290,12 @@ function analyzeVoiceConfidence(transcript, durationSeconds) {
   };
 }
 
-// START INTERVIEW
 function startInterview() {
   if (!selectedRole) return;
-  questionNumber = 0;
   allAnswers = [];
   voiceMetricsPerQ = [];
   spokenTranscript = "";
+  questionNumber = 0;
   document.getElementById("interview-role-label").textContent =
     selectedRole + " Interview";
   document.getElementById("interview-mode-badge").textContent =
@@ -373,11 +368,11 @@ function resetVoiceUI() {
   animateWaveform(false);
 }
 
-// MIC
 function toggleMic() {
   isRecording ? stopRecording() : startRecording();
 }
-function reRecord() {
+
+function clearRecording() {
   stopRecording();
   setTimeout(() => {
     spokenTranscript = "";
@@ -422,7 +417,6 @@ function startRecording() {
     document.getElementById("transcript-text").innerHTML =
       display || '<span class="transcript-placeholder">Listening...</span>';
 
-    // Live confidence estimate
     const elapsed = (Date.now() - recordingStartTime) / 1000;
     const liveMetrics = analyzeVoiceConfidence(
       spokenTranscript + (interim || ""),
@@ -474,12 +468,10 @@ function stopRecording() {
   }
 }
 
-// SUBMIT
 async function submitAnswer() {
   const answer = document.getElementById("answer-input").value.trim();
   if (!answer) return showToast("Please write an answer first.", "error");
   document.getElementById("submit-btn").disabled = true;
-  document.getElementById("submit-btn").textContent = "Evaluating...";
   await evaluateAndStore(answer, null);
   document.getElementById("submit-btn").textContent = "Submit Answer →";
 }
@@ -572,17 +564,16 @@ function nextQuestion() {
   document.getElementById("eval-overlay").classList.remove("show");
   proceedAfterAnswer();
 }
+
 async function proceedAfterAnswer() {
   if (allAnswers.length >= 5) await finishInterview();
   else await loadNextQuestion();
 }
 
-// FINISH
 async function finishInterview() {
   showScreen("screen-results");
   document.getElementById("final-score-display").textContent = "...";
   document.getElementById("risk-pill").textContent = "Calculating...";
-  document.getElementById("voice-confidence-card").style.display = "none";
 
   try {
     const res = await fetch(`${API}/interview/finish`, {
@@ -644,7 +635,6 @@ function renderResults(iv) {
       " points. This is the #1 reason candidates fail technical rounds despite feeling prepared.";
   }
 
-  // VOICE CONFIDENCE RESULT CARD
   if (interviewMode === "voice" && voiceMetricsPerQ.length > 0) {
     document.getElementById("voice-confidence-card").style.display = "block";
     const avgMetric = (key) =>
@@ -657,7 +647,6 @@ function renderResults(iv) {
     const avgVocab = avgMetric("vocabRichness");
     const avgComplete = avgMetric("completeness");
     const avgFiller = avgMetric("fillerPct");
-    // Most common pace
     const paces = voiceMetricsPerQ.map((m) => m.pace);
     const paceMode = paces
       .sort(
@@ -678,7 +667,6 @@ function renderResults(iv) {
     document.getElementById("vc-filler-fill").style.width =
       Math.min(100, avgFiller * 3) + "%";
 
-    // Personalized insight
     let insight = "";
     if (avgFiller > 20)
       insight =
@@ -768,7 +756,6 @@ function renderResults(iv) {
   }
 }
 
-// DASHBOARD
 async function loadDashboard() {
   if (!token) return;
   try {

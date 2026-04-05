@@ -1,4 +1,4 @@
-const Interview = require("../models/Interview"); // CLEAN FILE - no duplicates
+const Interview = require("../models/Interview");
 const aiService = require("../services/aiService");
 const scoringService = require("../services/scoringService");
 

@@ -11,7 +11,6 @@
 </head>
 <body>
 
-<!-- SCREEN 1 — LANDING -->
 <div id="screen-landing" class="screen active">
   <nav>
     <div class="nav-logo">Place<span>IQ</span></div>
@@ -38,7 +37,6 @@
   </div>
 </div>
 
-<!-- SCREEN 2 — AUTH -->
 <div id="screen-auth" class="screen">
   <nav><div class="nav-logo" style="cursor:pointer" onclick="showScreen('screen-landing')">Place<span>IQ</span></div></nav>
   <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px">
@@ -66,7 +64,6 @@
   </div>
 </div>
 
-<!-- SCREEN 3 — ROLE + MODE -->
 <div id="screen-role" class="screen">
   <nav>
     <div class="nav-logo">Place<span>IQ</span></div>
@@ -100,8 +97,7 @@
 
 
 <!-- SCREEN 4 — INTERVIEW ROOM -->
-<div id="screen-interview" class="screen">
-  <nav>
+< <nav>
     <div class="nav-logo">Place<span>IQ</span></div>
     <div class="nav-right">
       <span id="interview-role-label" style="color:var(--muted);font-size:0.85rem"></span>
@@ -123,8 +119,7 @@
     </div>
 
     <!-- TEXT MODE -->
-    <div id="text-mode-ui">
-      <div class="answer-label">Your Answer</div>
+    < <div class="answer-label">Your Answer</div>
       <textarea id="answer-input" placeholder="Type your answer here. Be as detailed as you can — the AI evaluates depth and accuracy." rows="6"></textarea>
       <div class="interview-actions">
         <button class="btn" id="submit-btn" onclick="submitAnswer()">Submit Answer →</button>
@@ -135,16 +130,12 @@
     <!-- VOICE MODE -->
     <div id="voice-mode-ui" class="voice-interview-ui">
 
-      <!-- Live waveform visualizer -->
-      <div class="waveform-wrap waveform-idle" id="waveform-wrap">
-        <!-- bars injected by JS -->
-      </div>
+      <div class="waveform-wrap waveform-idle" id="waveform-wrap"
 
       <!-- Live confidence bar -->
       <div class="confidence-live-wrap">
         <div class="confidence-live-label">
           <span>Voice Confidence</span>
-          <span id="conf-live-val">0%</span>
         </div>
         <div class="confidence-live-track">
           <div class="confidence-live-fill" id="conf-live-fill"></div>
@@ -155,15 +146,13 @@
       <div class="transcript-box">
         <div class="transcript-label">Your spoken answer</div>
         <div id="transcript-text"><span class="transcript-placeholder">Press 🎤 and speak your answer clearly...</span></div>
-      </div>
-
+      <
       <!-- Mic + actions -->
       <div class="mic-area">
         <button class="mic-btn" id="mic-btn" onclick="toggleMic()">🎤</button>
         <div class="mic-status" id="mic-status">Press to start speaking</div>
       </div>
-      <div class="voice-actions">
-        <button class="btn" id="voice-submit-btn" onclick="submitVoiceAnswer()" disabled>Submit Answer →</button>
+      < <button class="btn" id="voice-submit-btn" onclick="submitVoiceAnswer()" disabled>Submit Answer →</button>
         <button class="btn btn-secondary" onclick="reRecord()">Re-record</button>
         <button class="btn-ghost" onclick="skipQuestion()">Skip</button>
       </div>
@@ -174,7 +163,6 @@
 <!-- Eval Overlay -->
 <div class="eval-overlay" id="eval-overlay">
   <div class="eval-card">
-    <div style="font-family:var(--font-head);font-weight:700;font-size:1rem;margin-bottom:4px">Answer Evaluated</div>
     <div style="color:var(--muted);font-size:0.82rem;margin-bottom:16px">Here's how you did on this question</div>
     <div class="eval-score-row">
       <div class="eval-score-chip"><div class="val" id="eval-tech">—</div><div class="lbl">Technical</div></div>
@@ -191,7 +179,6 @@
 <div id="screen-results" class="screen">
   <nav>
     <div class="nav-logo">Place<span>IQ</span></div>
-    <div class="nav-right">
       <button class="btn-ghost" onclick="showScreen('screen-dashboard');loadDashboard()">Dashboard</button>
       <button class="btn-ghost" onclick="logout()">Logout</button>
     </div>
@@ -211,9 +198,8 @@
 
     <!-- VOICE CONFIDENCE ANALYSIS CARD -->
     <div class="voice-confidence-card" id="voice-confidence-card" style="display:none">
-      <h3>🎙️ Voice Confidence Analysis</h3>
+      <h3> Voice Confidence Analysis</h3>
       <div class="vc-grid">
-        <div class="vc-metric">
           <div class="vc-val" id="vc-overall" style="color:var(--accent)">—</div>
           <div class="vc-lbl">Overall Confidence</div>
         </div>
@@ -253,7 +239,7 @@
     </div>
 
     <div class="roadmap-section">
-      <h3>📍 Improvement Roadmap</h3>
+      <h3> Improvement Roadmap</h3>
       <div id="roadmap-steps"><div style="color:var(--muted);font-size:0.9rem">Generating your personalized roadmap...</div></div>
     </div>
     <div class="results-actions">
@@ -268,7 +254,6 @@
   <nav>
     <div class="nav-logo">Place<span>IQ</span></div>
     <div class="nav-right">
-      <span id="dash-user-name" style="color:var(--muted);font-size:0.9rem"></span>
       <button class="btn" onclick="showScreen('screen-role')">New Interview →</button>
       <button class="btn-ghost" onclick="logout()">Logout</button>
     </div>
