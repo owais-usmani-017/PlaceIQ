@@ -1,5 +1,5 @@
 // API configuration
-const API_BASE = "https://placeiq-backend-pivf.onrender.com/api";
+const API_BASE = "https://placeiq-backend-pjvf.onrender.com/api";
 
 export async function apiCall(
   endpoint,
