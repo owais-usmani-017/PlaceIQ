@@ -274,7 +274,7 @@ function analyzeVoiceConfidence(transcript, durationSeconds) {
     paceScore * 0.25 +
       Math.max(0, 100 - fillerPct * 3) * 0.3 +
       vocabRichness * 0.25 +
-      completeness * 0.2
+      completeness * 0.2,
   );
 
   return {
