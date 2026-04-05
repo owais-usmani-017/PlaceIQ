@@ -1,5 +1,5 @@
 // API configuration
-const API_BASE = "https://place-iq-know-before-you-get-placed.onrender.com/api";
+const API_BASE = "https://placeiq-backend-pivf.onrender.com/api";
 
 export async function apiCall(
   endpoint,
@@ -78,7 +78,6 @@ export function analyzeVoiceConfidence(transcript, durationSeconds) {
     if (matches) fillerCount += matches.length;
   });
 
-  // Calculate vocabulary richness
   const uniqueWords = new Set(
     words.map((w) => w.toLowerCase().replace(/[^a-z]/g, "")),
   );
