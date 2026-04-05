@@ -1,0 +1,70 @@
+/* Custom Color Utilities */
+.bg-dark-bg {
+  background-color: #08090d;
+}
+.bg-dark-surface {
+  background-color: #0f1117;
+}
+.bg-dark-card {
+  background-color: #141720;
+}
+
+.border-dark-border {
+  border-color: #1e2130;
+}
+
+.text-accent-cyan {
+  color: #00e5ff;
+}
+.text-accent-purple {
+  color: #7b61ff;
+}
+
+.text-text-light {
+  color: #e8eaf0;
+}
+.text-text-muted {
+  color: #5a6070;
+}
+
+.text-status-success {
+  color: #00e096;
+}
+.text-status-warn {
+  color: #ffb830;
+}
+.text-status-danger {
+  color: #ff4d6d;
+}
+
+.bg-status-success\/10 {
+  background-color: rgba(0, 224, 150, 0.1);
+}
+.bg-status-warn\/10 {
+  background-color: rgba(255, 184, 48, 0.1);
+}
+.bg-status-danger\/10 {
+  background-color: rgba(255, 77, 109, 0.1);
+}
+
+.border-status-success {
+  border-color: #00e096;
+}
+.border-status-warn {
+  border-color: #ffb830;
+}
+.border-status-danger {
+  border-color: #ff4d6d;
+}
+
+.font-heading {
+  font-family: "Syne", sans-serif;
+}
+.font-body {
+  font-family: "DM Sans", sans-serif;
+}
+
+/* Common class fixes */
+.min-h-screen {
+  min-height: 100vh;
+}
