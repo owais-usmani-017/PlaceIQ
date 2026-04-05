@@ -13,7 +13,7 @@ connectDB();
 
 app.use(
   cors({
-    origin: "https://place-iq-know-before-you-get-placed.vercel.app",
+    origin: "https://place-iq-five.vercel.app/",
     credentials: true,
   }),
 );
