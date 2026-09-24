@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const MODEL = "llama-3.3-70b-versatile";
+const MODEL = "openai/gpt-oss-20b";
 
 const callGroq = async function (prompt) {
   
@@ -43,6 +43,16 @@ const safeParseJSON = function (text) {
   }
 };
 
+const score = function (value, field, maximum) {
+  const number = Number(value);
+
+  if (!Number.isFinite(number) || number < 0 || number > maximum) {
+    throw new Error("Invalid AI value for " + field);
+  }
+
+  return Math.round(number);
+};
+
 const generateQuestion = async function (role) {
   const prompt =
     "You are a strict technical interviewer at a top tech company.\n" +
@@ -54,7 +64,13 @@ const generateQuestion = async function (role) {
     '{"question": "your question here"}';
 
   const text = await callGroq(prompt);
-  return safeParseJSON(text);
+  const result = safeParseJSON(text);
+
+  if (!result || typeof result.question !== "string" || !result.question.trim()) {
+    throw new Error("Invalid AI question response");
+  }
+
+  return { question: result.question.trim() };
 };
 
 const evaluateAnswer = async function (question, answer, role) {
@@ -80,7 +96,19 @@ const evaluateAnswer = async function (question, answer, role) {
     "}";
 
   const text = await callGroq(prompt);
-  return safeParseJSON(text);
+  const result = safeParseJSON(text);
+
+  if (!result || typeof result.feedback !== "string") {
+    throw new Error("Invalid AI evaluation response");
+  }
+
+  return {
+    technical: score(result.technical, "technical", 10),
+    clarity: score(result.clarity, "clarity", 10),
+    depth: score(result.depth, "depth", 10),
+    confidenceGap: score(result.confidenceGap, "confidenceGap", 100),
+    feedback: result.feedback.trim(),
+  };
 };
 
 const generateRoadmap = async function (role, weakAreas) {
@@ -96,7 +124,18 @@ const generateRoadmap = async function (role, weakAreas) {
     '{"steps": ["step1", "step2", "step3", "step4", "step5"]}';
 
   const text = await callGroq(prompt);
-  return safeParseJSON(text);
+  const result = safeParseJSON(text);
+
+  if (
+    !result ||
+    !Array.isArray(result.steps) ||
+    result.steps.length === 0 ||
+    result.steps.some((step) => typeof step !== "string" || !step.trim())
+  ) {
+    throw new Error("Invalid AI roadmap response");
+  }
+
+  return { steps: result.steps.slice(0, 5).map((step) => step.trim()) };
 };
 
 module.exports = { generateQuestion, evaluateAnswer, generateRoadmap };

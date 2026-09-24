@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Navigation from "../components/Navigation";
 import { apiCall, analyzeVoiceConfidence } from "../utils/api";
 
@@ -21,21 +21,13 @@ export default function InterviewScreen({
   const [voiceMetrics, setVoiceMetrics] = useState(null);
   const [showEvaluation, setShowEvaluation] = useState(false);
   const [currentEvaluation, setCurrentEvaluation] = useState(null);
-  const [voiceMetricsPerQ, setVoiceMetricsPerQ] = useState([]);
   const recognitionRef = useRef(null);
   const recordingStartRef = useRef(null);
   const waveformRef = useRef(null);
+  const initialQuestionLoadedRef = useRef(false);
 
   // Load first question
-  useEffect(() => {
-    loadNextQuestion();
-  }, []);
-
-  // Setup voice recognition
-  const SpeechRecognition =
-    window.SpeechRecognition || window.webkitSpeechRecognition;
-
-  const loadNextQuestion = async () => {
+  const loadNextQuestion = useCallback(async () => {
     setQuestionNumber((prev) => prev + 1);
     setTextAnswer("");
     setVoiceTranscript("");
@@ -51,12 +43,42 @@ export default function InterviewScreen({
         token,
       );
       setCurrentQuestion(data.question);
-    } catch (error) {
+    } catch {
       showToast("Failed to load question", "error");
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedRole, token, showToast]);
+
+  useEffect(() => {
+    if (!initialQuestionLoadedRef.current) {
+      initialQuestionLoadedRef.current = true;
+      loadNextQuestion();
+    }
+
+    return () => recognitionRef.current?.stop();
+  }, [loadNextQuestion]);
+
+  useEffect(() => {
+    if (!waveformRef.current) return undefined;
+
+    let animationFrame;
+    const bars = waveformRef.current.querySelectorAll(".waveform-bar");
+    const animate = () => {
+      bars.forEach((bar) => {
+        bar.style.height = `${Math.random() * 40 + 4}px`;
+      });
+      animationFrame = requestAnimationFrame(animate);
+    };
+
+    if (isRecording) animate();
+
+    return () => cancelAnimationFrame(animationFrame);
+  }, [isRecording]);
+
+  // Setup voice recognition
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
 
   const submitTextAnswer = async () => {
     if (!textAnswer.trim()) {
@@ -80,9 +102,8 @@ export default function InterviewScreen({
       setCurrentEvaluation(data);
       setAnswers((prev) => [...prev, data]);
       setShowEvaluation(true);
-    } catch (error) {
+    } catch {
       showToast("Evaluation failed", "error");
-      handleNextQuestion();
     } finally {
       setLoading(false);
     }
@@ -104,13 +125,10 @@ export default function InterviewScreen({
     recognitionRef.current.lang = "en-US";
 
     recognitionRef.current.onresult = (event) => {
-      let final = "",
-        interim = "";
+      let final = "";
       for (let i = event.resultIndex; i < event.results.length; i++) {
         if (event.results[i].isFinal) {
           final += event.results[i][0].transcript + " ";
-        } else {
-          interim += event.results[i][0].transcript;
         }
       }
       setVoiceTranscript((prev) => prev + final);
@@ -124,7 +142,6 @@ export default function InterviewScreen({
     };
 
     recognitionRef.current.start();
-    animateWaveform();
   };
 
   const stopRecording = () => {
@@ -132,21 +149,6 @@ export default function InterviewScreen({
       recognitionRef.current.stop();
     }
     setIsRecording(false);
-  };
-
-  const animateWaveform = () => {
-    if (waveformRef.current) {
-      const bars = waveformRef.current.querySelectorAll(".waveform-bar");
-      const animate = () => {
-        bars.forEach((bar) => {
-          bar.style.height = Math.random() * 40 + 4 + "px";
-        });
-        if (isRecording) {
-          requestAnimationFrame(animate);
-        }
-      };
-      animate();
-    }
   };
 
   const submitVoiceAnswer = async () => {
@@ -178,19 +180,17 @@ export default function InterviewScreen({
         ...prev,
         { ...data, voiceConfidence: metrics.overall },
       ]);
-      setVoiceMetricsPerQ((prev) => [...prev, metrics]);
       setShowEvaluation(true);
-    } catch (error) {
+    } catch {
       showToast("Evaluation failed", "error");
-      handleNextQuestion();
     } finally {
       setLoading(false);
     }
   };
 
   const skipQuestion = () => {
-    setAnswers((prev) => [
-      ...prev,
+    const nextAnswers = [
+      ...answers,
       {
         question: currentQuestion,
         answer: "",
@@ -200,20 +200,22 @@ export default function InterviewScreen({
         confidenceGap: 0,
         feedback: "Skipped.",
       },
-    ]);
-    handleNextQuestion();
+    ];
+
+    setAnswers(nextAnswers);
+    advanceToNextQuestion(nextAnswers);
   };
 
-  const handleNextQuestion = () => {
-    if (answers.length >= 5) {
-      finishInterview();
+  const advanceToNextQuestion = (nextAnswers = answers) => {
+    if (nextAnswers.length >= 5) {
+      finishInterview(nextAnswers);
     } else {
       setShowEvaluation(false);
       loadNextQuestion();
     }
   };
 
-  const finishInterview = async () => {
+  const finishInterview = async (answersToSubmit = answers) => {
     setLoading(true);
     try {
       const data = await apiCall(
@@ -221,15 +223,16 @@ export default function InterviewScreen({
         "POST",
         {
           role: selectedRole,
-          answers: answers,
+          answers: answersToSubmit,
         },
         token,
       );
       onFinish(data.interview);
-    } catch (error) {
+    } catch {
       // Fallback calculation
       const avg = (key) =>
-        answers.reduce((a, b) => a + (b[key] || 0), 0) / answers.length;
+        answersToSubmit.reduce((a, b) => a + (b[key] || 0), 0) /
+        answersToSubmit.length;
       const finalScore = Math.round(
         avg("technical") * 0.5 + avg("clarity") * 0.25 + avg("depth") * 0.25,
       );
@@ -412,7 +415,7 @@ export default function InterviewScreen({
               </div>
 
               <button
-                onClick={handleNextQuestion}
+                onClick={() => advanceToNextQuestion()}
                 className="btn-primary w-full"
               >
                 {questionNumber >= 5 ? "View Results →" : "Next Question →"}

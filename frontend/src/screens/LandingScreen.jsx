@@ -1,6 +1,6 @@
 import Navigation from "../components/Navigation";
 
-export default function LandingScreen({ onGetStarted }) {
+export default function LandingScreen({ onGetStarted, onLogin }) {
   return (
     <>
       <nav className="sticky top-0 z-50 flex items-center justify-between px-10 py-5 border-b border-dark-border bg-dark-bg/90 backdrop-blur-md">
@@ -8,13 +8,12 @@ export default function LandingScreen({ onGetStarted }) {
           <span className="text-accent-cyan">Place</span>
           <span className="text-text-light">IQ</span>
         </div>
+
         <div className="flex gap-3">
-          <button
-            onClick={() => (window.location.hash = "#login")}
-            className="btn-ghost"
-          >
+          <button onClick={onLogin} className="btn-ghost">
             Log In
           </button>
+
           <button onClick={onGetStarted} className="btn-primary">
             Get Started →
           </button>

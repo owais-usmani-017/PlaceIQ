@@ -18,21 +18,29 @@ export default function DashboardScreen({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadDashboard();
-  }, []);
+    let cancelled = false;
 
-  const loadDashboard = async () => {
-    setLoading(true);
-    try {
-      const data = await apiCall("/interview/dashboard", "GET", null, token);
-      setStats(data.stats);
-      setInterviews(data.interviews || []);
-    } catch (error) {
-      showToast("Failed to load dashboard", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const loadDashboard = async () => {
+      setLoading(true);
+      try {
+        const data = await apiCall("/interview/dashboard", "GET", null, token);
+        if (!cancelled) {
+          setStats(data.stats);
+          setInterviews(data.interviews || []);
+        }
+      } catch {
+        if (!cancelled) showToast("Failed to load dashboard", "error");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    loadDashboard();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [token, showToast]);
 
   const getRiskColor = (level) => {
     switch (level) {

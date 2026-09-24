@@ -1,5 +1,9 @@
 // API configuration
-const API_BASE = "https://placeiq-backend-pjvf.onrender.com/api";
+const API_BASE =
+  import.meta.env.VITE_API_BASE ||
+  (import.meta.env.DEV
+    ? "http://localhost:4000/api"
+    : "https://placeiq-backend-pjvf.onrender.com/api");
 
 export async function apiCall(
   endpoint,
@@ -7,11 +11,19 @@ export async function apiCall(
   body = null,
   token = null,
 ) {
+  const controller = new AbortController();
+
+  // Prevent the UI from loading forever if the backend doesn't respond.
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, 30000);
+
   const options = {
     method,
     headers: {
       "Content-Type": "application/json",
     },
+    signal: controller.signal,
   };
 
   if (token) {
@@ -22,14 +34,39 @@ export async function apiCall(
     options.body = JSON.stringify(body);
   }
 
-  const response = await fetch(`${API_BASE}${endpoint}`, options);
-  const data = await response.json();
+  try {
+    const response = await fetch(`${API_BASE}${endpoint}`, options);
 
-  if (!response.ok) {
-    throw new Error(data.message || "API error");
+    let data;
+
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
+
+    if (!response.ok) {
+      throw new Error(data.message || "API error");
+    }
+
+    return data;
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error(
+        "The server is taking too long to respond. Please try again.",
+      );
+    }
+
+    if (error instanceof TypeError) {
+      throw new Error(
+        "Unable to connect to the server. Please check your connection.",
+      );
+    }
+
+    throw error;
+  } finally {
+    clearTimeout(timeout);
   }
-
-  return data;
 }
 
 // Voice analysis functions
@@ -54,6 +91,7 @@ export function analyzeVoiceConfidence(transcript, durationSeconds) {
     .trim()
     .split(/\s+/)
     .filter((w) => w.length > 0);
+
   const wordCount = words.length;
 
   if (wordCount === 0) {
@@ -72,15 +110,20 @@ export function analyzeVoiceConfidence(transcript, durationSeconds) {
   // Count filler words
   const lowerTranscript = transcript.toLowerCase();
   let fillerCount = 0;
+
   FILLER_WORDS.forEach((word) => {
     const regex = new RegExp(`\\b${word}\\b`, "gi");
     const matches = lowerTranscript.match(regex);
-    if (matches) fillerCount += matches.length;
+
+    if (matches) {
+      fillerCount += matches.length;
+    }
   });
 
   const uniqueWords = new Set(
     words.map((w) => w.toLowerCase().replace(/[^a-z]/g, "")),
   );
+
   const vocabRichness = Math.min(
     100,
     Math.round((uniqueWords.size / wordCount) * 100 * 1.2),
@@ -89,8 +132,10 @@ export function analyzeVoiceConfidence(transcript, durationSeconds) {
   // Calculate WPM and pace
   const wpm =
     durationSeconds > 0 ? Math.round((wordCount / durationSeconds) * 60) : 0;
-  let pace = "Normal",
-    paceScore = 85;
+
+  let pace = "Normal";
+  let paceScore = 85;
+
   if (wpm < 80) {
     pace = "Too Slow";
     paceScore = 40;
@@ -109,7 +154,9 @@ export function analyzeVoiceConfidence(transcript, durationSeconds) {
   }
 
   const completeness = Math.min(100, Math.round((wordCount / 80) * 100));
+
   const fillerPct = Math.min(100, Math.round((fillerCount / wordCount) * 100));
+
   const fluency = Math.max(
     0,
     Math.round(100 - fillerPct * 2.5 + vocabRichness * 0.2),

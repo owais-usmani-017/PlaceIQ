@@ -1,4 +1,8 @@
-require("dotenv").config();
+const path = require("path");
+
+require("dotenv").config({
+  path: path.join(__dirname, ".env"),
+});
 
 const express = require("express");
 const cors = require("cors");
@@ -25,7 +29,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
-app.use(express.json());
+app.use(express.json({ limit: "32kb" }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/interview", interviewRoutes);

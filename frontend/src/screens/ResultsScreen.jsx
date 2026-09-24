@@ -1,8 +1,6 @@
-import { useEffect } from "react";
 import Navigation from "../components/Navigation";
 
 export default function ResultsScreen({
-  token,
   currentUser,
   interviewResults,
   selectedRole,
@@ -10,7 +8,6 @@ export default function ResultsScreen({
   onNewInterview,
   onDashboard,
   onLogout,
-  showToast,
 }) {
   const results = interviewResults || {
     finalScore: 0,
@@ -127,7 +124,7 @@ export default function ResultsScreen({
                 </div>
                 <div className="relative w-full h-2 bg-dark-bg rounded-full overflow-hidden mb-3">
                   <div
-                    className={`h-full bg-gradient-to-r ${item.color} transition-all duration-1000`}
+                    className={`h-full bg-linear-to-r ${item.color} transition-all duration-1000`}
                     style={{ width: `${item.value}%` }}
                   />
                 </div>
@@ -147,7 +144,7 @@ export default function ResultsScreen({
               <div className="space-y-4">
                 {results.roadmap.map((step, i) => (
                   <div key={i} className="flex gap-4">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent-cyan text-dark-bg font-heading font-bold flex items-center justify-center">
+                    <div className="shrink-0 w-8 h-8 rounded-full bg-accent-cyan text-dark-bg font-heading font-bold flex items-center justify-center">
                       {i + 1}
                     </div>
                     <div className="flex-1 py-2">

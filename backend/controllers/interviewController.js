@@ -2,39 +2,52 @@ const Interview = require("../models/Interview");
 const aiService = require("../services/aiService");
 const scoringService = require("../services/scoringService");
 
+const VALID_ROLES = new Set([
+  "Frontend",
+  "Backend",
+  "Machine Learning",
+  "DSA",
+]);
+
+const hasValidRole = (role) =>
+  typeof role === "string" && VALID_ROLES.has(role);
+
 const startInterview = async (req, res) => {
   try {
     const { role } = req.body;
-    if (!role) {
+    if (!hasValidRole(role)) {
       return res.status(400).json({ message: "Role is required" });
     }
     return res.json({ message: "Interview started", role });
-  } catch (err) {
-    return res
-      .status(500)
-      .json({ message: "Server error", error: err.message });
+    } catch (err) {
+    console.error("Interview start error:", err.message);
+    return res.status(500).json({ message: "Unable to start interview" });
   }
 };
 
 const getQuestion = async (req, res) => {
   try {
     const { role } = req.body;
-    if (!role) {
+    if (!hasValidRole(role)) {
       return res.status(400).json({ message: "Role is required" });
     }
     const result = await aiService.generateQuestion(role);
     return res.json(result);
   } catch (err) {
-    return res
-      .status(500)
-      .json({ message: "Failed to generate question", error: err.message });
+    console.error("Question generation error:", err.message);
+    return res.status(500).json({ message: "Failed to generate question" });
   }
 };
 
 const evaluateSingleAnswer = async (req, res) => {
   try {
     const { question, answer, role } = req.body;
-    if (!question || !answer) {
+    if (
+      typeof question !== "string" ||
+      !question.trim() ||
+      typeof answer !== "string" ||
+      !answer.trim()
+    ) {
       return res
         .status(400)
         .json({ message: "Question and answer are required" });
@@ -46,9 +59,8 @@ const evaluateSingleAnswer = async (req, res) => {
     );
     return res.json(result);
   } catch (err) {
-    return res
-      .status(500)
-      .json({ message: "Failed to evaluate answer", error: err.message });
+    console.error("Answer evaluation error:", err.message);
+    return res.status(500).json({ message: "Failed to evaluate answer" });
   }
 };
 
@@ -57,7 +69,12 @@ const finishInterview = async (req, res) => {
     const { role, answers } = req.body;
     const userId = req.user._id;
 
-    if (!answers || answers.length === 0) {
+    if (
+      !hasValidRole(role) ||
+      !Array.isArray(answers) ||
+      answers.length === 0 ||
+      answers.length > 5
+    ) {
       return res.status(400).json({ message: "No answers provided" });
     }
 
@@ -88,9 +105,8 @@ const finishInterview = async (req, res) => {
 
     return res.json({ interview });
   } catch (err) {
-    return res
-      .status(500)
-      .json({ message: "Failed to save interview", error: err.message });
+    console.error("Interview save error:", err.message);
+    return res.status(500).json({ message: "Failed to save interview" });
   }
 };
 

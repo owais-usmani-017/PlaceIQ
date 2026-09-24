@@ -16,16 +16,13 @@ const interviewSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  role: {
-    type: String,
-    required: true,
-  },
+  role: { type: String, required: true, trim: true },
   answers: [answerSchema],
-  finalScore: { type: Number, default: 0 },
-  technicalScore: { type: Number, default: 0 },
-  clarityScore: { type: Number, default: 0 },
-  depthScore: { type: Number, default: 0 },
-  confidenceGap: { type: Number, default: 0 },
+  finalScore: { type: Number, default: 0, min: 0, max: 100 },
+  technicalScore: { type: Number, default: 0, min: 0, max: 100 },
+  clarityScore: { type: Number, default: 0, min: 0, max: 100 },
+  depthScore: { type: Number, default: 0, min: 0, max: 100 },
+  confidenceGap: { type: Number, default: 0, min: 0, max: 100 },
   riskLevel: {
     type: String,
     enum: ["Low", "Medium", "High"],
@@ -37,5 +34,7 @@ const interviewSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
+
+interviewSchema.index({ userId: 1, completedAt: -1 });
 
 module.exports = mongoose.model("Interview", interviewSchema);

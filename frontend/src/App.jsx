@@ -8,35 +8,98 @@ import ResultsScreen from "./screens/ResultsScreen";
 import DashboardScreen from "./screens/DashboardScreen";
 import Toast from "./components/Toast";
 
+const VALID_SCREENS = [
+  "landing",
+  "auth",
+  "role",
+  "interview",
+  "results",
+  "dashboard",
+];
+
+function getScreenFromHash() {
+  const hash = window.location.hash.replace("#", "");
+
+  return VALID_SCREENS.includes(hash) ? hash : "landing";
+}
+
+function getInitialScreen() {
+  const screen = getScreenFromHash();
+
+  if (
+    screen === "landing" &&
+    localStorage.getItem("placeiq_token") &&
+    localStorage.getItem("placeiq_user")
+  ) {
+    return "dashboard";
+  }
+
+  return screen;
+}
+
 function App() {
-  const [currentScreen, setCurrentScreen] = useState("landing");
+  const [currentScreen, setCurrentScreen] = useState(getInitialScreen);
+
   const [token, setToken] = useState(localStorage.getItem("placeiq_token"));
+
   const [currentUser, setCurrentUser] = useState(
     JSON.parse(localStorage.getItem("placeiq_user") || "null"),
   );
+
   const [selectedRole, setSelectedRole] = useState("");
   const [interviewMode, setInterviewMode] = useState("text");
+
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("");
+
   const [interviewResults, setInterviewResults] = useState(null);
+
+  // Navigate to a new screen and create browser history
+  const navigate = (screen) => {
+    if (!VALID_SCREENS.includes(screen)) {
+      return;
+    }
+
+    window.history.pushState({ screen }, "", `#${screen}`);
+    setCurrentScreen(screen);
+  };
+
+  // Handle Chrome/browser Back and Forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      const screen = getScreenFromHash();
+      setCurrentScreen(screen);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
 
   // Save auth data when user logs in
   const handleAuthSuccess = (data) => {
     setToken(data.token);
     setCurrentUser(data.user);
+
     localStorage.setItem("placeiq_token", data.token);
     localStorage.setItem("placeiq_user", JSON.stringify(data.user));
+
     showToast("Welcome, " + data.user.name + "! 👋", "success");
-    setCurrentScreen("role");
+
+    navigate("role");
   };
 
   // Logout
   const handleLogout = () => {
     setToken(null);
     setCurrentUser(null);
+
     localStorage.removeItem("placeiq_token");
     localStorage.removeItem("placeiq_user");
-    setCurrentScreen("landing");
+
+    navigate("landing");
   };
 
   // Show toast notification
@@ -45,23 +108,19 @@ function App() {
     setToastType(type);
   };
 
-  // Auto-show dashboard if logged in
-  useEffect(() => {
-    if (token && currentUser && currentScreen === "landing") {
-      setCurrentScreen("dashboard");
-    }
-  }, []);
-
   return (
     <div className="min-h-screen bg-dark-bg">
       {currentScreen === "landing" && (
-        <LandingScreen onGetStarted={() => setCurrentScreen("auth")} />
+        <LandingScreen
+          onGetStarted={() => navigate("auth")}
+          onLogin={() => navigate("auth")}
+        />
       )}
 
       {currentScreen === "auth" && (
         <AuthScreen
           onAuthSuccess={handleAuthSuccess}
-          onBackClick={() => setCurrentScreen("landing")}
+          onBackClick={() => navigate("landing")}
           showToast={showToast}
         />
       )}
@@ -72,10 +131,10 @@ function App() {
           onStartInterview={(role, mode) => {
             setSelectedRole(role);
             setInterviewMode(mode);
-            setCurrentScreen("interview");
+            navigate("interview");
           }}
           onLogout={handleLogout}
-          onDashboard={() => setCurrentScreen("dashboard")}
+          onDashboard={() => navigate("dashboard")}
           showToast={showToast}
         />
       )}
@@ -88,7 +147,7 @@ function App() {
           interviewMode={interviewMode}
           onFinish={(results) => {
             setInterviewResults(results);
-            setCurrentScreen("results");
+            navigate("results");
           }}
           onLogout={handleLogout}
           showToast={showToast}
@@ -102,8 +161,8 @@ function App() {
           interviewResults={interviewResults}
           selectedRole={selectedRole}
           interviewMode={interviewMode}
-          onNewInterview={() => setCurrentScreen("role")}
-          onDashboard={() => setCurrentScreen("dashboard")}
+          onNewInterview={() => navigate("role")}
+          onDashboard={() => navigate("dashboard")}
           onLogout={handleLogout}
           showToast={showToast}
         />
@@ -113,7 +172,7 @@ function App() {
         <DashboardScreen
           token={token}
           currentUser={currentUser}
-          onNewInterview={() => setCurrentScreen("role")}
+          onNewInterview={() => navigate("role")}
           onLogout={handleLogout}
           showToast={showToast}
         />
