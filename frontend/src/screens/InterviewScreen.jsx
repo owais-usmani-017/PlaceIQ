@@ -100,7 +100,14 @@ export default function InterviewScreen({
       );
 
       setCurrentEvaluation(data);
-      setAnswers((prev) => [...prev, data]);
+      setAnswers((prev) => [
+        ...prev,
+        {
+          ...data,
+          question: currentQuestion,
+          answer: textAnswer,
+        },
+      ]);
       setShowEvaluation(true);
     } catch {
       showToast("Evaluation failed", "error");
@@ -178,7 +185,12 @@ export default function InterviewScreen({
       setCurrentEvaluation(data);
       setAnswers((prev) => [
         ...prev,
-        { ...data, voiceConfidence: metrics.overall },
+        {
+          ...data,
+          question: currentQuestion,
+          answer: voiceTranscript,
+          voiceConfidence: metrics.overall,
+        },
       ]);
       setShowEvaluation(true);
     } catch {
@@ -194,9 +206,9 @@ export default function InterviewScreen({
       {
         question: currentQuestion,
         answer: "",
-        technical: 1,
-        clarity: 1,
-        depth: 1,
+        technical: 0,
+        clarity: 0,
+        depth: 0,
         confidenceGap: 0,
         feedback: "Skipped.",
       },
