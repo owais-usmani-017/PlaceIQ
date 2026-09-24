@@ -2,12 +2,7 @@ const Interview = require("../models/Interview");
 const aiService = require("../services/aiService");
 const scoringService = require("../services/scoringService");
 
-const VALID_ROLES = new Set([
-  "Frontend",
-  "Backend",
-  "Machine Learning",
-  "DSA",
-]);
+const VALID_ROLES = new Set(["Frontend", "Backend", "Machine Learning", "DSA"]);
 
 const hasValidRole = (role) =>
   typeof role === "string" && VALID_ROLES.has(role);
@@ -19,7 +14,7 @@ const startInterview = async (req, res) => {
       return res.status(400).json({ message: "Role is required" });
     }
     return res.json({ message: "Interview started", role });
-    } catch (err) {
+  } catch (err) {
     console.error("Interview start error:", err.message);
     return res.status(500).json({ message: "Unable to start interview" });
   }

@@ -4,7 +4,6 @@ const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL = "openai/gpt-oss-20b";
 
 const callGroq = async function (prompt) {
-  
   try {
     const response = await axios.post(
       GROQ_URL,
@@ -66,7 +65,11 @@ const generateQuestion = async function (role) {
   const text = await callGroq(prompt);
   const result = safeParseJSON(text);
 
-  if (!result || typeof result.question !== "string" || !result.question.trim()) {
+  if (
+    !result ||
+    typeof result.question !== "string" ||
+    !result.question.trim()
+  ) {
     throw new Error("Invalid AI question response");
   }
 
