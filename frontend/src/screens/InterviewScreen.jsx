@@ -365,7 +365,11 @@ export default function InterviewScreen({
                   >
                     Submit Answer →
                   </button>
-                  <button type="button" onClick={skipQuestion} className="btn-secondary">
+                  <button
+                    type="button"
+                    onClick={skipQuestion}
+                    className="btn-secondary"
+                  >
                     Skip
                   </button>
                 </div>

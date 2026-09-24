@@ -158,10 +158,18 @@ export default function ResultsScreen({
 
           {/* Action Buttons */}
           <div className="flex gap-4 justify-center flex-wrap">
-            <button type="button" onClick={onNewInterview} className="btn-primary">
+            <button
+              type="button"
+              onClick={onNewInterview}
+              className="btn-primary"
+            >
               🔄 Retake Interview
             </button>
-            <button type="button" onClick={onDashboard} className="btn-secondary">
+            <button
+              type="button"
+              onClick={onDashboard}
+              className="btn-secondary"
+            >
               📊 View Dashboard
             </button>
           </div>
