@@ -412,7 +412,12 @@ export default function InterviewScreen({
               </div>
 
               <button
-                onClick={() => advanceToNextQuestion()}
+                type="button"
+                onClick={() =>
+                  questionNumber >= 5
+                    ? finishInterview()
+                    : advanceToNextQuestion()
+                }
                 className="btn-primary w-full"
               >
                 {questionNumber >= 5 ? "View Results →" : "Next Question →"}
