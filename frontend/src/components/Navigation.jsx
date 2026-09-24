@@ -14,11 +14,11 @@ export default function Navigation({
       <div className="flex items-center gap-3">
         {user && <span className="text-text-muted text-sm">{user.name}</span>}
         {showDashboardBtn && (
-          <button onClick={onDashboard} className="btn-ghost">
+          <button type="button" onClick={onDashboard} className="btn-ghost">
             Dashboard
           </button>
         )}
-        <button onClick={onLogout} className="btn-ghost">
+        <button type="button" onClick={onLogout} className="btn-ghost">
           Logout
         </button>
       </div>

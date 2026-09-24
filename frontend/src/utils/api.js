@@ -11,6 +11,12 @@ export async function apiCall(
   body = null,
   token = null,
 ) {
+  const requestMethod = method.toUpperCase();
+
+  if (endpoint.startsWith("/interview/") && !token) {
+    throw new Error("Authentication required. Please log in again.");
+  }
+
   const controller = new AbortController();
 
   // Prevent the UI from loading forever if the backend doesn't respond.
@@ -19,7 +25,7 @@ export async function apiCall(
   }, 30000);
 
   const options = {
-    method,
+    method: requestMethod,
     headers: {
       "Content-Type": "application/json",
     },

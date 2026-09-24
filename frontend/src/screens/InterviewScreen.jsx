@@ -309,6 +309,7 @@ export default function InterviewScreen({
                 />
                 <div className="flex gap-3">
                   <button
+                    type="button"
                     onClick={submitTextAnswer}
                     disabled={loading}
                     className="btn-primary flex-1"
@@ -316,6 +317,7 @@ export default function InterviewScreen({
                     Submit Answer →
                   </button>
                   <button
+                    type="button"
                     onClick={skipQuestion}
                     className="btn-secondary flex-1"
                   >
@@ -349,19 +351,21 @@ export default function InterviewScreen({
                 {/* Controls */}
                 <div className="flex gap-3">
                   <button
+                    type="button"
                     onClick={isRecording ? stopRecording : startRecording}
                     className={`flex-1 btn-primary ${isRecording ? "bg-status-danger" : ""}`}
                   >
                     {isRecording ? "⏹️ Stop" : "🎤 Start Recording"}
                   </button>
                   <button
+                    type="button"
                     onClick={submitVoiceAnswer}
                     disabled={!voiceTranscript || isRecording || loading}
                     className="btn-secondary flex-1"
                   >
                     Submit Answer →
                   </button>
-                  <button onClick={skipQuestion} className="btn-secondary">
+                  <button type="button" onClick={skipQuestion} className="btn-secondary">
                     Skip
                   </button>
                 </div>

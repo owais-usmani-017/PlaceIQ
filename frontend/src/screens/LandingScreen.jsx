@@ -10,11 +10,11 @@ export default function LandingScreen({ onGetStarted, onLogin }) {
         </div>
 
         <div className="flex gap-3">
-          <button onClick={onLogin} className="btn-ghost">
+          <button type="button" onClick={onLogin} className="btn-ghost">
             Log In
           </button>
 
-          <button onClick={onGetStarted} className="btn-primary">
+          <button type="button" onClick={onGetStarted} className="btn-primary">
             Get Started →
           </button>
         </div>
@@ -76,6 +76,7 @@ export default function LandingScreen({ onGetStarted, onLogin }) {
 
           {/* CTA */}
           <button
+            type="button"
             onClick={onGetStarted}
             className="btn-primary text-lg px-10 py-4"
           >

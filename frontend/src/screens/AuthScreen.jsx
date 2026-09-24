@@ -66,6 +66,7 @@ export default function AuthScreen({ onAuthSuccess, onBackClick, showToast }) {
     <>
       <nav className="sticky top-0 z-50 flex items-center justify-between px-10 py-5 border-b border-dark-border bg-dark-bg/90 backdrop-blur-md">
         <button
+          type="button"
           onClick={onBackClick}
           className="text-2xl font-heading font-bold"
         >
@@ -86,6 +87,7 @@ export default function AuthScreen({ onAuthSuccess, onBackClick, showToast }) {
           {/* Tabs */}
           <div className="flex gap-2 mb-8 bg-dark-bg rounded-lg p-1">
             <button
+              type="button"
               onClick={() => setIsLogin(true)}
               className={`flex-1 py-2 px-4 rounded-md font-semibold transition-colors ${
                 isLogin ? "bg-accent-cyan text-dark-bg" : "text-text-muted"
@@ -94,6 +96,7 @@ export default function AuthScreen({ onAuthSuccess, onBackClick, showToast }) {
               Log In
             </button>
             <button
+              type="button"
               onClick={() => setIsLogin(false)}
               className={`flex-1 py-2 px-4 rounded-md font-semibold transition-colors ${
                 !isLogin ? "bg-accent-cyan text-dark-bg" : "text-text-muted"
@@ -164,6 +167,7 @@ export default function AuthScreen({ onAuthSuccess, onBackClick, showToast }) {
           <p className="text-text-muted text-sm mt-6 text-center">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button
+              type="button"
               onClick={() => setIsLogin(!isLogin)}
               className="text-accent-cyan hover:underline font-semibold"
             >

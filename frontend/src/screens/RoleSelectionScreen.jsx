@@ -76,6 +76,7 @@ export default function RoleSelectionScreen({
                 { id: "voice", icon: "🎙️", label: "Speak Answers" },
               ].map((mode) => (
                 <button
+                  type="button"
                   key={mode.id}
                   onClick={() => setSelectedMode(mode.id)}
                   className={`card p-6 text-center transition-all ${
@@ -99,6 +100,7 @@ export default function RoleSelectionScreen({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               {ROLES.map((role) => (
                 <button
+                  type="button"
                   key={role.id}
                   onClick={() => setSelectedRole(role.id)}
                   className={`card p-6 text-center transition-all cursor-pointer ${
@@ -120,6 +122,7 @@ export default function RoleSelectionScreen({
           {/* CTA Button */}
           <div className="text-center">
             <button
+              type="button"
               onClick={handleStart}
               disabled={!selectedRole}
               className="btn-primary text-lg px-10 py-4"

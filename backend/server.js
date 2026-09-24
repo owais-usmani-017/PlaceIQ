@@ -36,5 +36,13 @@ app.use("/api/interview", interviewRoutes);
 
 app.get("/", (req, res) => res.json({ message: "PlaceIQ API is running" }));
 
+app.use("/api", (req, res) => {
+  res.status(404).json({
+    message: "API endpoint not found or HTTP method not allowed",
+    method: req.method,
+    path: req.originalUrl,
+  });
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log("Server running on port " + PORT));

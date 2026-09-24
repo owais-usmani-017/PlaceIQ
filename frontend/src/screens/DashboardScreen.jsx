@@ -89,7 +89,7 @@ export default function DashboardScreen({
                 Track your interview performance
               </p>
             </div>
-            <button onClick={onNewInterview} className="btn-primary">
+            <button type="button" onClick={onNewInterview} className="btn-primary">
               + New Interview
             </button>
           </div>
@@ -144,7 +144,7 @@ export default function DashboardScreen({
                 <p className="text-text-muted mb-6">
                   Take your first AI interview to see results here.
                 </p>
-                <button onClick={onNewInterview} className="btn-primary">
+                <button type="button" onClick={onNewInterview} className="btn-primary">
                   Start Interview
                 </button>
               </div>
