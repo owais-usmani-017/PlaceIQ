@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./index.css";
 import LandingScreen from "./screens/LandingScreen";
 import AuthScreen from "./screens/AuthScreen";
@@ -51,6 +51,7 @@ function App() {
 
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("");
+  const toastTimeoutRef = useRef(null);
 
   const [interviewResults, setInterviewResults] = useState(null);
 
@@ -104,9 +105,27 @@ function App() {
 
   // Show toast notification
   const showToast = (message, type = "success") => {
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+    }
+
     setToastMessage(message);
     setToastType(type);
+
+    toastTimeoutRef.current = setTimeout(() => {
+      setToastMessage("");
+      setToastType("");
+      toastTimeoutRef.current = null;
+    }, 4000);
   };
+
+  useEffect(() => {
+    return () => {
+      if (toastTimeoutRef.current) {
+        clearTimeout(toastTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-dark-bg">
