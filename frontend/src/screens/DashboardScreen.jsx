@@ -40,7 +40,10 @@ export default function DashboardScreen({
     return () => {
       cancelled = true;
     };
-  }, [token, showToast]);
+  // The token controls when dashboard data changes. The toast callback is only
+  // used for failures and must not restart this request on every App render.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   const getRiskColor = (level) => {
     switch (level) {
