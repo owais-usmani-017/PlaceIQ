@@ -20,6 +20,11 @@ export default function DashboardScreen({
   useEffect(() => {
     let cancelled = false;
 
+    if (!token || !currentUser) {
+      onLogout();
+      return undefined;
+    }
+
     const loadDashboard = async () => {
       setLoading(true);
       try {
@@ -28,8 +33,14 @@ export default function DashboardScreen({
           setStats(data.stats);
           setInterviews(data.interviews || []);
         }
-      } catch {
-        if (!cancelled) showToast("Failed to load dashboard", "error");
+      } catch (error) {
+        if (!cancelled) {
+          if (error.message.includes("Not authorized")) {
+            onLogout();
+          } else {
+            showToast(error.message || "Failed to load dashboard", "error");
+          }
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }

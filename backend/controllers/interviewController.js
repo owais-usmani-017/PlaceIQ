@@ -83,7 +83,15 @@ const finishInterview = async (req, res) => {
       "%, Depth: " +
       scores.depth +
       "%";
-    const roadmapData = await aiService.generateRoadmap(role, weakAreas);
+    let roadmap = [];
+    try {
+      const roadmapData = await aiService.generateRoadmap(role, weakAreas);
+      roadmap = Array.isArray(roadmapData.steps)
+        ? roadmapData.steps.slice(0, 5)
+        : [];
+    } catch (roadmapError) {
+      console.error("Roadmap generation error:", roadmapError.message);
+    }
 
     const interview = await Interview.create({
       userId,
@@ -95,7 +103,7 @@ const finishInterview = async (req, res) => {
       depthScore: scores.depth,
       confidenceGap: scores.confidenceGap,
       riskLevel: scores.riskLevel,
-      roadmap: roadmapData.steps || [],
+      roadmap,
     });
 
     return res.json({ interview });

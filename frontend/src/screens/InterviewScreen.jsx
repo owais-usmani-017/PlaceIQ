@@ -240,23 +240,8 @@ export default function InterviewScreen({
         token,
       );
       onFinish(data.interview);
-    } catch {
-      // Fallback calculation
-      const avg = (key) =>
-        answersToSubmit.reduce((a, b) => a + (b[key] || 0), 0) /
-        answersToSubmit.length;
-      const finalScore = Math.round(
-        avg("technical") * 0.5 + avg("clarity") * 0.25 + avg("depth") * 0.25,
-      );
-      onFinish({
-        finalScore,
-        technicalScore: Math.round(avg("technical")),
-        clarityScore: Math.round(avg("clarity")),
-        depthScore: Math.round(avg("depth")),
-        confidenceGap: Math.round(avg("confidenceGap")),
-        riskLevel: "Medium",
-        roadmap: [],
-      });
+    } catch (error) {
+      showToast(error.message || "Failed to save interview", "error");
     } finally {
       setLoading(false);
     }

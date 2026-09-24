@@ -17,6 +17,8 @@ const VALID_SCREENS = [
   "dashboard",
 ];
 
+const PROTECTED_SCREENS = new Set(["role", "interview", "results", "dashboard"]);
+
 function getScreenFromHash() {
   const hash = window.location.hash.replace("#", "");
 
@@ -25,13 +27,16 @@ function getScreenFromHash() {
 
 function getInitialScreen() {
   const screen = getScreenFromHash();
+  const hasSession =
+    Boolean(localStorage.getItem("placeiq_token")) &&
+    Boolean(localStorage.getItem("placeiq_user"));
 
-  if (
-    screen === "landing" &&
-    localStorage.getItem("placeiq_token") &&
-    localStorage.getItem("placeiq_user")
-  ) {
+  if (screen === "landing" && hasSession) {
     return "dashboard";
+  }
+
+  if (PROTECTED_SCREENS.has(screen) && !hasSession) {
+    return "auth";
   }
 
   return screen;
@@ -69,7 +74,13 @@ function App() {
   useEffect(() => {
     const handlePopState = () => {
       const screen = getScreenFromHash();
-      setCurrentScreen(screen);
+      const hasSession =
+        Boolean(localStorage.getItem("placeiq_token")) &&
+        Boolean(localStorage.getItem("placeiq_user"));
+
+      setCurrentScreen(
+        PROTECTED_SCREENS.has(screen) && !hasSession ? "auth" : screen,
+      );
     };
 
     window.addEventListener("popstate", handlePopState);
