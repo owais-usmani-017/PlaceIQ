@@ -17,7 +17,12 @@ const VALID_SCREENS = [
   "dashboard",
 ];
 
-const PROTECTED_SCREENS = new Set(["role", "interview", "results", "dashboard"]);
+const PROTECTED_SCREENS = new Set([
+  "role",
+  "interview",
+  "results",
+  "dashboard",
+]);
 
 function getScreenFromHash() {
   const hash = window.location.hash.replace("#", "");
